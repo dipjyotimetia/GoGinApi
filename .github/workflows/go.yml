@@ -33,9 +33,10 @@ jobs:
     - name: Test
       run: go test -v .
     - name: Publish to Registry
-      uses: elgohr/Publish-Docker-Github-Action@master
+      uses: docker/build-push-action@v1.1.0
       with:
-        name: dipjyotimetia/goginapi
         username: ${{ secrets.DOCKER_USERNAME }}
         password: ${{ secrets.DOCKER_PASSWORD }}
+        repository: dipjyotimetia/goginapi
         dockerfile: Dockerfile
+        tags: latest
