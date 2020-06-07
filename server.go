@@ -23,12 +23,23 @@ func setupLogOutput() {
 }
 
 func main() {
+	server := SetupRouter()
+	_ = server.Run(":8082")
+}
+
+func SetupRouter() *gin.Engine {
 	defer videoRepository.CloseDB()
 
 	setupLogOutput()
 
 	server := gin.New()
 	server.Use(gin.Recovery(), middleware.Logger())
+
+	server.GET("/", func(c *gin.Context) {
+		c.JSON(http.StatusOK, gin.H{
+			"hello": "world",
+		})
+	})
 
 	server.GET("/videos", func(ctx *gin.Context) {
 		ctx.JSON(200, videoController.FindAll())
@@ -60,6 +71,5 @@ func main() {
 			ctx.JSON(http.StatusOK, gin.H{"message": "video input is valid"})
 		}
 	})
-
-	_ = server.Run(":8082")
+	return server
 }
