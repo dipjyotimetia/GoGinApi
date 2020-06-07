@@ -1,0 +1,35 @@
+version: '3'
+services:
+  backend:
+    container_name: api
+    restart: always
+    build: .
+    ports:
+      - 8082:8082
+    depends_on:
+      - database
+    networks:
+      - fullstack
+
+  database:
+    container_name: postgresdb
+    restart: always
+    image: "postgres" # use latest official postgres version
+    env_file:
+      - database.env # configure postgres
+    volumes:
+      - postgresql:/var/lib/postgresql
+      - database-data:/var/lib/postgresql/data/ # persist data even if container shuts down
+    ports:
+      - 5432:5432
+    networks:
+      - fullstack
+
+volumes:
+  postgresql:
+  database-data: # named volumes can be managed easier using docker-compose
+
+# Networks to be created to facilitate communication between containers
+networks:
+  fullstack:
+    driver: bridge
