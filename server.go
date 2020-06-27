@@ -12,9 +12,9 @@ import (
 )
 
 var (
-	videoRepository repository.VideoRepository = repository.NewVideoRepository()
-	videoService    service.VideoService       = service.New(videoRepository)
-	videoController controller.VideoController = controller.New(videoService)
+	videoRepository = repository.NewVideoRepository()
+	videoService    = service.New(videoRepository)
+	videoController = controller.New(videoService)
 )
 
 func setupLogOutput() {
