@@ -35,8 +35,9 @@ jobs:
             docker build . --file Dockerfile
           fi
 
-  build:
-    name: Build
+  DockerPublish:
+    needs: test
+    name: DockerPublish
     runs-on: ubuntu-latest
     steps:
 
@@ -70,7 +71,7 @@ jobs:
           
   # Push image to GitHub Packages.
   # See also https://docs.docker.com/docker-hub/builds/
-  push:
+  GithubPublish:
     # Ensure test job passes before pushing image.
     needs: test
 
