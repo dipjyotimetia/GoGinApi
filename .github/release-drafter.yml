@@ -2,18 +2,18 @@ name-template: 'v$NEXT_PATCH_VERSION'
 tag-template: 'v$NEXT_PATCH_VERSION'
 categories:
   - title: '🚀 Features'
-    label: 'Feature 🎁'
+    label: 'Feature'
   - title: '💣 Breaking Change'
-    label: 'Breaking Change 💣'
+    label: 'Breaking Change'
   - title: '🐛 Bug Fixes'
-    label: 'Bug 🐛'
+    label: 'Bug'
   - title: '📝 Documentation'
-    label: 'Documentation 📝'
+    label: 'Documentation'
   - title: '🔨 Maintenance'
-    label: 'Maintenance 🔨'
+    label: 'Maintenance'
 change-template: '- $TITLE (#$NUMBER)'
 template: |
   ## Getting GoGin
   Visit the documentation at readme
-  ## New in Vanilla v$NEXT_PATCH_VERSION
+  ## New in GoGin v$NEXT_PATCH_VERSION
   $CHANGES
