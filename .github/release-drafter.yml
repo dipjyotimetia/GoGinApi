@@ -1,8 +1,18 @@
 categories:
   - title: '🚀 Features'
-    label: 'feature'
+    labels:
+      - 'feature'
+      - 'enhancement'
+      - 'test'
   - title: '🐛 Bug Fixes'
     labels:
       - 'fix'
       - 'bugfix'
       - 'bug'
+  - title: '🧰 Maintenance'
+    label: 'chore'
+
+template: |
+  ## Changes
+
+  $CHANGES
