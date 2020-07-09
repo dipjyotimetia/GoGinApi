@@ -27,7 +27,7 @@ jobs:
       - name: Run Gosec Security Scanner
         uses: securego/gosec@master
         with:
-          args: ./
+          args: ./...
 
   # Run tests.
   # See also https://docs.docker.com/docker-hub/builds/automated-testing/
