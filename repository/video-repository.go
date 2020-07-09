@@ -65,13 +65,8 @@ func NewVideoRepository() VideoRepository {
 		fmt.Print(err)
 	}
 
-	db.Debug().AutoMigrate(&entity.Video{}, &entity.Person{})
+	db.AutoMigrate(&entity.Video{}, &entity.Person{})
 
-	//db, err := gorm.Open("sqlite3", "./test.db")
-	//if err != nil {
-	//	panic("Failed to connect database")
-	//}
-	//db.AutoMigrate(&entity.Video{}, &entity.Person{})
 	return &Database{
 		connection: db,
 	}
