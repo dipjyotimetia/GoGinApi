@@ -11,6 +11,6 @@ categories:
     label: 'Maintenance'
 template: |
   ## Getting GoGin
-  Visit the documentation at readme
+  Visit the documentation at README
   ## New in GoGin v$NEXT_PATCH_VERSION
   $CHANGES
