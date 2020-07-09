@@ -17,3 +17,4 @@ jobs:
         # config-name: my-config.yml
         env:
           GITHUB_TOKEN: ${{ secrets.RELEASE_TOKEN }}
+    continue-on-error: true
