@@ -2,11 +2,19 @@ package repository
 
 import (
 	"fmt"
+	"os"
+
 	"github.com/GoGinApi/v2/entity"
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/postgres"
 	"github.com/joho/godotenv"
-	"os"
+)
+
+var (
+	username = os.Getenv("db_user")
+	password = os.Getenv("db_pass")
+	dbName   = os.Getenv("db_name")
+	dbHost   = os.Getenv("db_host")
 )
 
 type VideoRepository interface {
@@ -49,20 +57,15 @@ func (db Database) FindAll() []entity.Video {
 func NewVideoRepository() VideoRepository {
 	e := godotenv.Load()
 	if e != nil {
-		fmt.Print(e)
+		fmt.Printf("Error while loading the env file%v", e)
 	}
-
-	username := os.Getenv("db_user")
-	password := os.Getenv("db_pass")
-	dbName := os.Getenv("db_name")
-	dbHost := os.Getenv("db_host")
 
 	dbUri := fmt.Sprintf("host=%s user=%s dbname=%s sslmode=disable password=%s", dbHost, username, dbName, password)
 	fmt.Println(dbUri)
 
 	db, err := gorm.Open("postgres", dbUri)
 	if err != nil {
-		fmt.Print(err)
+		fmt.Printf("Error while opening db connection%v", err)
 	}
 
 	db.AutoMigrate(&entity.Video{}, &entity.Person{})

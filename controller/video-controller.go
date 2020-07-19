@@ -1,14 +1,16 @@
 package controller
 
 import (
+	"net/http"
+	"strconv"
+
 	"github.com/GoGinApi/v2/entity"
 	"github.com/GoGinApi/v2/service"
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
-	"net/http"
-	"strconv"
 )
 
+//VideoController is
 type VideoController interface {
 	FindAll() []entity.Video
 	Save(ctx *gin.Context) error
@@ -17,12 +19,14 @@ type VideoController interface {
 	ShowAll(ctx *gin.Context)
 }
 
+//Controller is
 type Controller struct {
 	service service.VideoService
 }
 
 var validate *validator.Validate
 
+//New is
 func New(service service.VideoService) VideoController {
 	validate = validator.New()
 	return &Controller{
@@ -30,10 +34,12 @@ func New(service service.VideoService) VideoController {
 	}
 }
 
+//FindAll is
 func (c *Controller) FindAll() []entity.Video {
 	return c.service.FindAll()
 }
 
+//Save is
 func (c *Controller) Save(ctx *gin.Context) error {
 	var video entity.Video
 	err := ctx.ShouldBindJSON(&video)
@@ -48,6 +54,7 @@ func (c *Controller) Save(ctx *gin.Context) error {
 	return nil
 }
 
+//ShowAll is
 func (c *Controller) ShowAll(ctx *gin.Context) {
 	videos := c.service.FindAll()
 	data := gin.H{
@@ -57,6 +64,7 @@ func (c *Controller) ShowAll(ctx *gin.Context) {
 	ctx.HTML(http.StatusOK, "index.html", data)
 }
 
+//Update is
 func (c *Controller) Update(ctx *gin.Context) error {
 	var video entity.Video
 	err := ctx.ShouldBindJSON(&video)
@@ -67,7 +75,7 @@ func (c *Controller) Update(ctx *gin.Context) error {
 	if err != nil {
 		return err
 	}
-	video.Id = id
+	video.ID = id
 	err = validate.Struct(video)
 	if err != nil {
 		return err
@@ -76,13 +84,14 @@ func (c *Controller) Update(ctx *gin.Context) error {
 	return nil
 }
 
+//Delete is ...
 func (c Controller) Delete(ctx *gin.Context) error {
 	var video entity.Video
 	id, err := strconv.ParseUint(ctx.Param("id"), 0, 0)
 	if err != nil {
 		return err
 	}
-	video.Id = id
+	video.ID = id
 	c.service.Delete(video)
 	return nil
 }

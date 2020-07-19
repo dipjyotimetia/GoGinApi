@@ -1,4 +1,4 @@
-version: '3'
+version: '3.7'
 services:
   backend:
     container_name: api
@@ -14,7 +14,7 @@ services:
   database:
     container_name: postgresdb
     restart: always
-    image: "postgres" # use latest official postgres version
+    image: "postgres:12.3-alpine" # use latest official postgres version
     env_file:
       - database.env # configure postgres
     volumes:
