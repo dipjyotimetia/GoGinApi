@@ -2,8 +2,6 @@ package repository
 
 import (
 	"fmt"
-	"os"
-
 	"github.com/GoGinApi/v2/entity"
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/postgres"
@@ -11,10 +9,10 @@ import (
 )
 
 var (
-	username = os.Getenv("db_user")
-	password = os.Getenv("db_pass")
-	dbName   = os.Getenv("db_name")
-	dbHost   = os.Getenv("db_host")
+	username = "goland"   //os.Getenv("db_user")
+	password = "goland"   //os.Getenv("db_pass")
+	dbName   = "goland"   //os.Getenv("db_name")
+	dbHost   = "database" //os.Getenv("db_host")
 )
 
 type VideoRepository interface {
