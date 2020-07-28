@@ -12,7 +12,7 @@ var (
 	username = "goland"   //os.Getenv("db_user")
 	password = "goland"   //os.Getenv("db_pass")
 	dbName   = "goland"   //os.Getenv("db_name")
-	dbHost   = "localhost" //os.Getenv("db_host")
+	dbHost   = "database" //os.Getenv("db_host")
 )
 
 type VideoRepository interface {
