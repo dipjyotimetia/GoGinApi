@@ -40,54 +40,80 @@ func SetupRouter() *gin.Engine {
 	server := gin.New()
 	server.Use(gin.Recovery(), middleware.Logger())
 
-	server.GET("/", func(c *gin.Context) {
-		c.JSON(http.StatusOK, gin.H{
-			"ping": "pong",
+	v1 := server.Group("/api/v1")
+	{
+		v1.GET("/", func(c *gin.Context) {
+			c.JSON(http.StatusOK, gin.H{
+				"ping": "pong",
+			})
 		})
-	})
 
-	server.GET("/videos", func(ctx *gin.Context) {
-		ctx.JSON(200, videoController.FindAll())
-	})
+		v1.GET("/videos", func(ctx *gin.Context) {
+			ctx.JSON(200, videoController.FindAll())
+		})
 
-	server.GET("/users", func(ctx *gin.Context) {
-		ctx.JSON(200, userController.GetAllUsers())
-	})
+		v1.GET("/users", func(ctx *gin.Context) {
+			ctx.JSON(http.StatusOK, userController.GetAllUsers())
+		})
 
-	server.POST("/videos", func(ctx *gin.Context) {
-		err := videoController.Save(ctx)
-		if err != nil {
-			ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		} else {
-			ctx.JSON(http.StatusOK, gin.H{"message": "video input is valid"})
-		}
-	})
+		v1.GET("/users/:id", func(ctx *gin.Context) {
+			ctx.JSON(http.StatusOK, userController.GetUser(ctx))
+		})
 
-	server.POST("/users", func(ctx *gin.Context) {
-		err := userController.InsertUser(ctx)
-		if err != nil {
-			ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		} else {
-			ctx.JSON(http.StatusOK, gin.H{"message": "user input is valid"})
-		}
-	})
+		v1.POST("/videos", func(ctx *gin.Context) {
+			err := videoController.Save(ctx)
+			if err != nil {
+				ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			} else {
+				ctx.JSON(http.StatusOK, gin.H{"message": "video input is valid"})
+			}
+		})
 
-	server.PUT("/videos/:id", func(ctx *gin.Context) {
-		err := videoController.Update(ctx)
-		if err != nil {
-			ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		} else {
-			ctx.JSON(http.StatusOK, gin.H{"message": "video input is valid"})
-		}
-	})
+		v1.POST("/users", func(ctx *gin.Context) {
+			err := userController.InsertUser(ctx)
+			if err != nil {
+				ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			} else {
+				ctx.JSON(http.StatusOK, gin.H{"message": "user input is valid"})
+			}
+		})
 
-	server.DELETE("/videos/:id", func(ctx *gin.Context) {
-		err := videoController.Delete(ctx)
-		if err != nil {
-			ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		} else {
-			ctx.JSON(http.StatusOK, gin.H{"message": "video input is valid"})
-		}
-	})
+		v1.PUT("/videos/:id", func(ctx *gin.Context) {
+			err := videoController.Update(ctx)
+			if err != nil {
+				ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			} else {
+				ctx.JSON(http.StatusOK, gin.H{"message": "video input is valid"})
+			}
+		})
+
+		v1.PUT("/users/:id", func(ctx *gin.Context) {
+			err := userController.UpdateUser(ctx)
+			if err != nil {
+				ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			} else {
+				ctx.JSON(http.StatusOK, gin.H{"message": "video input is valid"})
+			}
+		})
+
+		v1.DELETE("/videos/:id", func(ctx *gin.Context) {
+			err := videoController.Delete(ctx)
+			if err != nil {
+				ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			} else {
+				ctx.JSON(http.StatusOK, gin.H{"message": "video input is valid"})
+			}
+		})
+
+		v1.DELETE("/users/:id", func(ctx *gin.Context) {
+			err := userController.DeleteUser(ctx)
+			if err != nil {
+				ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			} else {
+				ctx.JSON(http.StatusOK, gin.H{"message": "video input is valid"})
+			}
+		})
+	}
+
 	return server
 }

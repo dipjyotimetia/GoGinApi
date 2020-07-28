@@ -25,7 +25,7 @@ func TestPingPong(t *testing.T) {
 	// Grab our router
 	router := SetupRouter()
 	// Perform a GET request with that handler.
-	w := performRequest(router, "GET", "/")
+	w := performRequest(router, "GET", "/api/v1/")
 	// Assert we encoded correctly,
 	// the request gives a 200
 	assert.Equal(t, http.StatusOK, w.Code)
