@@ -70,8 +70,6 @@ jobs:
               dep ensure
           fi
 
-      - name: Test
-        run: go test -v .
       - name: Publish to Registry
         uses: docker/build-push-action@v1.1.0
         with:
