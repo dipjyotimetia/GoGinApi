@@ -1,0 +1,36 @@
+version: '3.8'
+services:
+
+  backend:
+    build:
+      context: . # Use an image built from the specified dockerfile in the current directory.
+      dockerfile: Dockerfile
+    networks:
+      - overlay
+    ports:
+      - 8082:8082
+    restart: always
+    depends_on:
+      - db
+
+  db:
+    restart: always
+    image: "postgres"
+    environment:
+      POSTGRES_USER: goland
+      POSTGRES_PASSWORD: goland
+      POSTGRES_DB: goland
+    volumes:
+      - ./config/db/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - postgresql:/var/lib/postgresql
+    networks:
+      - overlay
+    ports:
+      - 5432:5432
+
+volumes:
+  postgresql:
+
+networks:
+  overlay:
+    driver: bridge

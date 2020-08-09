@@ -11,13 +11,12 @@ WORKDIR /app/GoGinApi
 COPY go.mod .
 COPY go.sum .
 COPY .env .
-COPY database.env .
 
 RUN go mod download
 
 COPY . .
 
-RUN CGO_ENABLED=0 go test -v
+#RUN CGO_ENABLED=0 go test -v
 
 # Build the Go app
 RUN go build -o ./out/GoGinApi .
