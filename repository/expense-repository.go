@@ -59,7 +59,7 @@ func (db ExpenseDatabase) GetAllExpense() []entity.Expense {
 		var expense entity.Expense
 
 		// unmarshal the row object to user
-		err = rows.Scan(&expense.ExpenseID,&expense.Username, &expense.ExpenseType, &expense.ExpenseAmount, &expense.ExpenseDate)
+		err = rows.Scan(&expense.ExpenseID, &expense.Username, &expense.ExpenseType, &expense.ExpenseAmount, &expense.ExpenseDate)
 
 		if err != nil {
 			log.Fatalf("Unable to scan the row. %v", err)
@@ -78,7 +78,7 @@ func NewExpenseRepository() ExpenseRepository {
 		log.Fatalf("Error loading .env file")
 	}
 
-	dbUri := fmt.Sprintf("host=%s user=%s dbname=%s sslmode=disable password=%s", "localhost", "goland", "goland", "goland")
+	dbUri := fmt.Sprintf("host=%s user=%s dbname=%s sslmode=disable password=%s", "database", "goland", "goland", "goland")
 	fmt.Println(dbUri)
 
 	db, err := sql.Open("postgres", dbUri)
