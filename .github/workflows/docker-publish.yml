@@ -44,7 +44,7 @@ jobs:
             docker-compose --file docker-compose.test.yml build
             docker-compose --file docker-compose.test.yml run sut
           else
-            docker-compose --file docker-compose.yml build
+            docker build . --file Dockerfile
           fi
 
   DockerPublish:

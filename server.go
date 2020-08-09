@@ -19,6 +19,10 @@ var (
 	userRepository = repository.NewUserRepository()
 	userService    = service.NewUser(userRepository)
 	userController = controller.NewUser(userService)
+
+	expenseRepository = repository.NewExpenseRepository()
+	expenseService    = service.NewExpense(expenseRepository)
+	expenseController = controller.NewExpense(expenseService)
 )
 
 func setupLogOutput() {
@@ -56,6 +60,10 @@ func SetupRouter() *gin.Engine {
 			ctx.JSON(http.StatusOK, userController.GetAllUsers())
 		})
 
+		v1.GET("/expense", func(ctx *gin.Context) {
+			ctx.JSON(http.StatusOK, expenseController.GetAllExpense())
+		})
+
 		v1.GET("/users/:id", func(ctx *gin.Context) {
 			ctx.JSON(http.StatusOK, userController.GetUser(ctx))
 		})
@@ -66,6 +74,15 @@ func SetupRouter() *gin.Engine {
 				ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			} else {
 				ctx.JSON(http.StatusOK, gin.H{"message": "video input is valid"})
+			}
+		})
+
+		v1.POST("/expense", func(ctx *gin.Context) {
+			err := expenseController.AddExpense(ctx)
+			if err != nil {
+				ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			} else {
+				ctx.JSON(http.StatusOK, gin.H{"message": "expense input is valid"})
 			}
 		})
 
