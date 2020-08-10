@@ -1,6 +1,11 @@
 ## Go Gin Api
 
+### MockGen
 
+```bash
+mockgen -source=repository/user-repository.go -destination=mocks/user-mock/mock_repository.go
+
+```
 ### Kubernetes deployment
 ```shell script
 minikube start
