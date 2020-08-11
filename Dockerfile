@@ -19,7 +19,7 @@ COPY . .
 #RUN CGO_ENABLED=0 go test -v
 
 # Build the Go app
-RUN go build -o ./out/GoGinApi .
+RUN go build -o ./out/GoGinApi ./cmd/server
 
 
 # This container exposes port 8080 to the outside world
