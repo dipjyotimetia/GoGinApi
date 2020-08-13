@@ -43,6 +43,8 @@ func SetupRouter() *gin.Engine {
 
 	server := gin.New()
 	server.Use(gin.Recovery(), middleware.Logger())
+	server.Use(middleware.Cors())
+	server.Use(middleware.RequestIDMiddleware())
 
 	v1 := server.Group("/api/v1")
 	{
