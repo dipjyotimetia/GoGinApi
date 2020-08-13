@@ -2,7 +2,7 @@ package middleware
 
 import (
 	"github.com/gin-gonic/gin"
-	uuid "github.com/twinj/uuid"
+	"github.com/twinj/uuid"
 )
 
 func RequestIDMiddleware() gin.HandlerFunc {
