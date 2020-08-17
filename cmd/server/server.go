@@ -35,6 +35,7 @@ func main() {
 	_ = server.Run(":8082")
 }
 
+//nolint:funlen
 func SetupRouter() *gin.Engine {
 	//defer videoRepository.CloseDB()
 	//defer userRepository.CloseDB()

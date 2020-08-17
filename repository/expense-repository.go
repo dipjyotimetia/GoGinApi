@@ -66,7 +66,6 @@ func (db ExpenseDatabase) GetAllExpense() []entity.Expense {
 		}
 		// append the user in the users slice
 		expenses = append(expenses, expense)
-
 	}
 	// return empty user on error
 	return expenses
@@ -78,10 +77,10 @@ func NewExpenseRepository() ExpenseRepository {
 		log.Fatalf("Error loading .env file")
 	}
 
-	dbUri := fmt.Sprintf("host=%s user=%s dbname=%s sslmode=disable password=%s", "db", "goland", "goland", "goland")
-	fmt.Println(dbUri)
+	dbURI := fmt.Sprintf("host=%s user=%s dbname=%s sslmode=disable password=%s", "db", "goland", "goland", "goland")
+	fmt.Println(dbURI)
 
-	db, err := sql.Open("postgres", dbUri)
+	db, err := sql.Open("postgres", dbURI)
 	if err != nil {
 		panic(err)
 	}

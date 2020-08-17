@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"github.com/GoGinApi/v2/entity"
 	"github.com/jinzhu/gorm"
-	_ "github.com/jinzhu/gorm/dialects/postgres"
+	_ "github.com/jinzhu/gorm/dialects/postgres" //nolint:golint
 	"github.com/joho/godotenv"
 )
 
@@ -58,10 +58,10 @@ func NewVideoRepository() VideoRepository {
 		fmt.Printf("Error while loading the env file%v", e)
 	}
 
-	dbUri := fmt.Sprintf("host=%s user=%s dbname=%s sslmode=disable password=%s", dbHost, username, dbName, password)
-	fmt.Println(dbUri)
+	dbURI := fmt.Sprintf("host=%s user=%s dbname=%s sslmode=disable password=%s", dbHost, username, dbName, password)
+	fmt.Println(dbURI)
 
-	db, err := gorm.Open("postgres", dbUri)
+	db, err := gorm.Open("postgres", dbURI)
 	if err != nil {
 		fmt.Printf("Error while opening db connection%v", err)
 	}
