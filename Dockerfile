@@ -26,4 +26,4 @@ RUN go build -o ./bin/GoGinApi ./cmd/server
 EXPOSE 8082
 
 # Run the binary program produced by `go install`
-CMD ["./out/GoGinApi"]
+CMD ["./bin/GoGinApi"]
