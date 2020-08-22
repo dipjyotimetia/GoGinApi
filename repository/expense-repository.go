@@ -72,7 +72,7 @@ func (db ExpenseDatabase) GetAllExpense() []entity.Expense {
 
 func NewExpenseRepository() ExpenseRepository {
 	//dbURI := fmt.Sprintf("host=%s user=%s dbname=%s sslmode=disable password=%s", "db", "goland", "goland", "goland")
-	dbURI := fmt.Sprintf("host=%s user=%s dbname=%s sslmode=disable password=%s", "10.102.176.3", "postgres", "postgres", "postgres")
+	dbURI := fmt.Sprintf("host=%s user=%s dbname=%s sslmode=disable password=%s", "10.169.32.3", "postgres", "postgres", "postgres")
 	fmt.Println(dbURI)
 
 	db, err := sql.Open("postgres", dbURI)
