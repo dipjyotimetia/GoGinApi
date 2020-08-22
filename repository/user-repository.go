@@ -4,7 +4,6 @@ import (
 	"database/sql"
 	"fmt"
 	"github.com/GoGinApi/v2/entity"
-	"github.com/joho/godotenv"
 	"log"
 )
 
@@ -159,11 +158,6 @@ func (db UserDatabase) DeleteUser(id int64) int64 { // create the delete sql que
 }
 
 func NewUserRepository() UserRepository {
-	err := godotenv.Load(".env")
-	if err != nil {
-		log.Fatalf("Error loading .env file")
-	}
-
 	dbURI := fmt.Sprintf("host=%s user=%s dbname=%s sslmode=disable password=%s", "db", "goland", "goland", "goland")
 	fmt.Println(dbURI)
 

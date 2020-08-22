@@ -4,7 +4,6 @@ import (
 	"database/sql"
 	"fmt"
 	"github.com/GoGinApi/v2/entity"
-	"github.com/joho/godotenv"
 	"log"
 )
 
@@ -72,12 +71,8 @@ func (db ExpenseDatabase) GetAllExpense() []entity.Expense {
 }
 
 func NewExpenseRepository() ExpenseRepository {
-	err := godotenv.Load(".env")
-	if err != nil {
-		log.Fatalf("Error loading .env file")
-	}
-
-	dbURI := fmt.Sprintf("host=%s user=%s dbname=%s sslmode=disable password=%s", "db", "goland", "goland", "goland")
+	//dbURI := fmt.Sprintf("host=%s user=%s dbname=%s sslmode=disable password=%s", "db", "goland", "goland", "goland")
+	dbURI := fmt.Sprintf("host=%s user=%s dbname=%s sslmode=disable password=%s", "35.189.45.107", "postgres", "postgres", "postgres")
 	fmt.Println(dbURI)
 
 	db, err := sql.Open("postgres", dbURI)
