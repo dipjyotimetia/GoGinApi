@@ -44,8 +44,6 @@ WORKDIR /app
 COPY go.* ./
 COPY go.mod ./
 COPY go.sum ./
-COPY .env ./
-COPY database.env ./
 
 RUN go mod download
 
