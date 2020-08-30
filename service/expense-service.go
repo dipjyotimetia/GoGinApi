@@ -11,10 +11,10 @@ type ExpenseService interface {
 }
 
 type expenseService struct {
-	expenseRepository repository.ExpenseRepository
+	expenseRepository repository.DataStore
 }
 
-func NewExpense(repo repository.ExpenseRepository) ExpenseService {
+func NewExpense(repo repository.DataStore) ExpenseService {
 	return &expenseService{expenseRepository: repo}
 }
 

@@ -7,27 +7,7 @@ import (
 	"log"
 )
 
-type UserRepository interface {
-	InsertUser(user entity.User) int64
-	GetAllUsers() []entity.User
-	GetUser(id int64) entity.User
-	UpdateUser(id int64, user entity.User) int64
-	DeleteUser(id int64) int64
-	CloseDB()
-}
-
-type UserDatabase struct {
-	connection *sql.DB
-}
-
-func (db UserDatabase) CloseDB() {
-	err := db.connection.Close()
-	if err != nil {
-		panic("failed to close connection")
-	}
-}
-
-func (db UserDatabase) InsertUser(user entity.User) int64 { // create the insert sql query
+func (db Database) InsertUser(user entity.User) int64 { // create the insert sql query
 	// returning userid will return the id of the inserted user
 	sqlStatement := `INSERT INTO users (name, location, age) VALUES ($1, $2, $3) RETURNING uid`
 
@@ -48,7 +28,7 @@ func (db UserDatabase) InsertUser(user entity.User) int64 { // create the insert
 	return id
 }
 
-func (db UserDatabase) GetAllUsers() []entity.User {
+func (db Database) GetAllUsers() []entity.User {
 	var users []entity.User
 
 	// create the select sql query
@@ -82,7 +62,7 @@ func (db UserDatabase) GetAllUsers() []entity.User {
 }
 
 // get one user from the DB by its userid
-func (db UserDatabase) GetUser(id int64) entity.User { // create a user of models.User type
+func (db Database) GetUser(id int64) entity.User { // create a user of models.User type
 	var user entity.User
 
 	// create the select sql query
@@ -109,7 +89,7 @@ func (db UserDatabase) GetUser(id int64) entity.User { // create a user of model
 }
 
 // update user in the DB
-func (db UserDatabase) UpdateUser(id int64, user entity.User) int64 { // close the db connection
+func (db Database) UpdateUser(id int64, user entity.User) int64 { // close the db connection
 	//defer db.Close()
 
 	// create the update sql query
@@ -135,7 +115,7 @@ func (db UserDatabase) UpdateUser(id int64, user entity.User) int64 { // close t
 }
 
 // delete user in the DB
-func (db UserDatabase) DeleteUser(id int64) int64 { // create the delete sql query
+func (db Database) DeleteUser(id int64) int64 { // create the delete sql query
 	sqlStatement := `DELETE FROM users WHERE uid=$1`
 
 	// execute the sql statement
@@ -155,26 +135,4 @@ func (db UserDatabase) DeleteUser(id int64) int64 { // create the delete sql que
 	fmt.Printf("Total rows/record affected %v", rowsAffected)
 
 	return rowsAffected
-}
-
-func NewUserRepository() UserRepository {
-	dbURI := fmt.Sprintf("host=%s user=%s dbname=%s sslmode=disable password=%s", "db", "goland", "goland", "goland")
-	fmt.Println(dbURI)
-
-	db, err := sql.Open("postgres", dbURI)
-	if err != nil {
-		panic(err)
-	}
-
-	err = db.Ping()
-	if err != nil {
-		panic(err)
-	}
-
-	fmt.Println("Successfully connected!")
-	// return the connection
-
-	return &UserDatabase{
-		connection: db,
-	}
 }

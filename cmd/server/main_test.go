@@ -23,7 +23,7 @@ func TestPingPong(t *testing.T) {
 		"ping": "pong",
 	}
 	// Grab our router
-	router := SetupRouter()
+	router := setupRouter()
 	// Perform a GET request with that handler.
 	w := performRequest(router, "GET", "/api/v1/")
 	// Assert we encoded correctly,
