@@ -1,13 +1,15 @@
 package controller
 
 import (
+	"strconv"
+
 	"github.com/GoGinApi/v2/entity"
 	"github.com/GoGinApi/v2/service"
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
-	"strconv"
 )
 
+//UserController having user function
 type UserController interface {
 	InsertUser(ctx *gin.Context) error
 	GetAllUsers() []entity.User
@@ -16,19 +18,21 @@ type UserController interface {
 	DeleteUser(ctx *gin.Context) error
 }
 
-//Controller is
+//userController is having serservice
 type userController struct {
 	service service.UserService
 }
 
 var userValidate *validator.Validate
 
+//NewUser implementing userController
 func NewUser(service service.UserService) UserController {
 	userValidate = validator.New()
 	return &userController{service: service}
 }
 
-func (c *userController) InsertUser(ctx *gin.Context) error {
+//InsertUser for create user
+func (uc *userController) InsertUser(ctx *gin.Context) error {
 	var user entity.User
 	err := ctx.ShouldBindJSON(&user)
 	if err != nil {
@@ -39,15 +43,17 @@ func (c *userController) InsertUser(ctx *gin.Context) error {
 	if err != nil {
 		return err
 	}
-	c.service.InsertUser(user)
+	uc.service.InsertUser(user)
 	return nil
 }
 
-func (c *userController) GetAllUsers() []entity.User {
-	return c.service.GetAllUsers()
+//GetAllUsers get all users
+func (uc *userController) GetAllUsers() []entity.User {
+	return uc.service.GetAllUsers()
 }
 
-func (c *userController) GetUser(ctx *gin.Context) entity.User {
+//GetUser get user
+func (uc *userController) GetUser(ctx *gin.Context) entity.User {
 	var user entity.User
 	err := ctx.ShouldBindJSON(&user)
 
@@ -64,10 +70,11 @@ func (c *userController) GetUser(ctx *gin.Context) entity.User {
 		return entity.User{}
 	}
 
-	return c.service.GetUser(user.ID)
+	return uc.service.GetUser(user.ID)
 }
 
-func (c *userController) UpdateUser(ctx *gin.Context) error {
+//UpdateUser update user
+func (uc *userController) UpdateUser(ctx *gin.Context) error {
 	var user entity.User
 	err := ctx.ShouldBindJSON(&user)
 
@@ -86,11 +93,12 @@ func (c *userController) UpdateUser(ctx *gin.Context) error {
 	if err != nil {
 		return err
 	}
-	c.service.UpdateUser(user.ID, user)
+	uc.service.UpdateUser(user.ID, user)
 	return nil
 }
 
-func (c *userController) DeleteUser(ctx *gin.Context) error {
+//DeleteUser delete user
+func (uc *userController) DeleteUser(ctx *gin.Context) error {
 	var user entity.User
 	id, err := strconv.ParseInt(ctx.Param("id"), 0, 0)
 
@@ -99,6 +107,6 @@ func (c *userController) DeleteUser(ctx *gin.Context) error {
 	}
 	user.ID = id
 
-	c.service.DeleteUser(user.ID)
+	uc.service.DeleteUser(user.ID)
 	return nil
 }

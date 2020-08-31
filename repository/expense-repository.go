@@ -14,6 +14,7 @@ func (db Database) CloseDB() {
 	}
 }
 
+//AddExpense add expense in expense table
 func (db Database) AddExpense(expense entity.Expense) int64 {
 	sqlStatement := `INSERT INTO expense (username, expenseType, expenseAmount, expenseDate) VALUES ($1,$2,$3,$4) RETURNING eid`
 
@@ -28,6 +29,7 @@ func (db Database) AddExpense(expense entity.Expense) int64 {
 	return id
 }
 
+//GetAllExpense query from expense table
 func (db Database) GetAllExpense() []entity.Expense {
 	var expenses []entity.Expense
 

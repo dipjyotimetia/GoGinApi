@@ -7,6 +7,7 @@ import (
 	"log"
 )
 
+//InsertUser query add user
 func (db Database) InsertUser(user entity.User) int64 { // create the insert sql query
 	// returning userid will return the id of the inserted user
 	sqlStatement := `INSERT INTO users (name, location, age) VALUES ($1, $2, $3) RETURNING uid`
@@ -28,6 +29,7 @@ func (db Database) InsertUser(user entity.User) int64 { // create the insert sql
 	return id
 }
 
+//GetAllUsers query all user
 func (db Database) GetAllUsers() []entity.User {
 	var users []entity.User
 

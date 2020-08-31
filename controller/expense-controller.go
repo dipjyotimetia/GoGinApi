@@ -7,6 +7,7 @@ import (
 	"github.com/go-playground/validator/v10"
 )
 
+//ExpenseController interface
 type ExpenseController interface {
 	AddExpense(ctx *gin.Context) error
 	GetAllExpense() []entity.Expense
@@ -18,12 +19,14 @@ type expenseController struct {
 
 var expenseValidate *validator.Validate
 
+//NewExpense expenseController
 func NewExpense(service service.ExpenseService) ExpenseController {
 	expenseValidate = validator.New()
 	return &expenseController{service: service}
 }
 
-func (e *expenseController) AddExpense(ctx *gin.Context) error {
+//AddExpense adding expense
+func (ec *expenseController) AddExpense(ctx *gin.Context) error {
 	var expense entity.Expense
 	err := ctx.ShouldBindJSON(&expense)
 	if err != nil {
@@ -34,10 +37,11 @@ func (e *expenseController) AddExpense(ctx *gin.Context) error {
 	if err != nil {
 		return err
 	}
-	e.service.AddExpense(expense)
+	ec.service.AddExpense(expense)
 	return nil
 }
 
-func (e *expenseController) GetAllExpense() []entity.Expense {
-	return e.service.GetAllExpense()
+//GetAllExpense get all expenses
+func (ec *expenseController) GetAllExpense() []entity.Expense {
+	return ec.service.GetAllExpense()
 }

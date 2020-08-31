@@ -33,6 +33,7 @@ func main() {
 }
 
 //SetSetupRouter initializing server
+//nolint:funlen
 func setupRouter() *gin.Engine {
 	// defer userRepository.CloseDB()
 
