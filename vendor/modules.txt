@@ -26,10 +26,6 @@ github.com/golang/mock/gomock
 # github.com/golang/protobuf v1.4.2
 ## explicit
 github.com/golang/protobuf/proto
-# github.com/jinzhu/gorm v1.9.16
-## explicit
-# github.com/joho/godotenv v1.3.0
-## explicit
 # github.com/json-iterator/go v1.1.10
 ## explicit
 github.com/json-iterator/go
@@ -60,11 +56,12 @@ github.com/stretchr/testify/assert
 github.com/twinj/uuid
 # github.com/ugorji/go/codec v1.1.7
 github.com/ugorji/go/codec
-# golang.org/x/crypto v0.0.0-20200820211705-5c72a883971a
+# golang.org/x/crypto v0.0.0-20191205180655-e7c4368fe9dd
 ## explicit
-# golang.org/x/sys v0.0.0-20200828194041-157a740278f4
+golang.org/x/crypto/bcrypt
+golang.org/x/crypto/blowfish
+# golang.org/x/sys v0.0.0-20200323222414-85ca7c5b95cd
 ## explicit
-golang.org/x/sys/internal/unsafeheader
 golang.org/x/sys/unix
 # google.golang.org/protobuf v1.25.0
 ## explicit

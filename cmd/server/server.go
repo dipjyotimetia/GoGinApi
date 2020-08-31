@@ -41,7 +41,7 @@ func setupRouter() *gin.Engine {
 
 	server := gin.New()
 	server.Use(gin.Recovery(), middleware.Logger())
-	server.Use(middleware.Cors())
+	//server.Use(middleware.Cors())
 	server.Use(middleware.RequestIDMiddleware())
 
 	v1 := server.Group("/api/v1")
@@ -52,19 +52,11 @@ func setupRouter() *gin.Engine {
 			})
 		})
 
-		v1.GET("/users", func(ctx *gin.Context) {
-			ctx.JSON(http.StatusOK, userController.GetAllUsers())
-		})
-
-		v1.GET("/expense", func(ctx *gin.Context) {
+		v1.GET("/getExpense", func(ctx *gin.Context) {
 			ctx.JSON(http.StatusOK, expenseController.GetAllExpense())
 		})
 
-		v1.GET("/users/:id", func(ctx *gin.Context) {
-			ctx.JSON(http.StatusOK, userController.GetUser(ctx))
-		})
-
-		v1.POST("/expense", func(ctx *gin.Context) {
+		v1.POST("/addExpense", func(ctx *gin.Context) {
 			err := expenseController.AddExpense(ctx)
 			if err != nil {
 				ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -73,8 +65,17 @@ func setupRouter() *gin.Engine {
 			}
 		})
 
-		v1.POST("/users", func(ctx *gin.Context) {
-			err := userController.InsertUser(ctx)
+		v1.GET("/session/:jwt", func(ctx *gin.Context) {
+			user, isAuthenticated := controller.AuthMiddleware(ctx, []byte("secret"))
+			if !isAuthenticated {
+				ctx.JSON(http.StatusUnauthorized, gin.H{"success": false, "msg": "unauthorized"})
+				return
+			}
+			ctx.JSON(http.StatusOK, gin.H{"success": true, "user": user})
+		})
+
+		v1.POST("/login", func(ctx *gin.Context) {
+			err := userController.Login(ctx)
 			if err != nil {
 				ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			} else {
@@ -82,24 +83,32 @@ func setupRouter() *gin.Engine {
 			}
 		})
 
-		v1.PUT("/users/:id", func(ctx *gin.Context) {
-			err := userController.UpdateUser(ctx)
+		v1.POST("/register", func(ctx *gin.Context) {
+			err := userController.Create(ctx)
 			if err != nil {
-				ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+				ctx.JSON(http.StatusBadRequest, gin.H{"error": 0})
 			} else {
-				ctx.JSON(http.StatusOK, gin.H{"message": "video input is valid"})
+				ctx.JSON(http.StatusOK, gin.H{"message": "user input is valid"})
 			}
 		})
 
-		v1.DELETE("/users/:id", func(ctx *gin.Context) {
-			err := userController.DeleteUser(ctx)
-			if err != nil {
-				ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		v1.POST("/createReset", func(ctx *gin.Context) {
+			err := userController.InitiatePasswordReset(ctx)
+			if err != "" {
+				ctx.JSON(http.StatusBadRequest, gin.H{"error": "Not able to reset"})
 			} else {
-				ctx.JSON(http.StatusOK, gin.H{"message": "video input is valid"})
+				ctx.JSON(http.StatusOK, gin.H{"message": "user input is valid"})
+			}
+		})
+
+		v1.POST("/resetPassword", func(ctx *gin.Context) {
+			err := userController.ResetPassword(ctx)
+			if err != nil {
+				ctx.JSON(http.StatusBadRequest, gin.H{"error": 0})
+			} else {
+				ctx.JSON(http.StatusOK, gin.H{"message": "user input is valid"})
 			}
 		})
 	}
-
 	return server
 }

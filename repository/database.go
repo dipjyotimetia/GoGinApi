@@ -19,11 +19,11 @@ const (
 type DataStore interface {
 	AddExpense(expense entity.Expense) int64
 	GetAllExpense() []entity.Expense
-	InsertUser(user entity.User) int64
-	GetAllUsers() []entity.User
-	GetUser(id int64) entity.User
-	UpdateUser(id int64, user entity.User) int64
-	DeleteUser(id int64) int64
+	ResetPassword(resetPassword entity.ResetPassword) error
+	Create(user entity.Register) error
+	Login(name, email, password, createdAt, updatedAt string,user entity.Login) error
+	CheckUserExist(user entity.Register) bool
+	CheckAndRetrieveUserIDViaEmail(createReset entity.CreateReset) (int, bool)
 	CloseDB()
 }
 
