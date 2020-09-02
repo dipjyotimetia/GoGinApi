@@ -65,7 +65,7 @@ func setupRouter() *gin.Engine {
 			}
 		})
 
-		v1.GET("/session/:jwt", func(ctx *gin.Context) {
+		v1.GET("/session", func(ctx *gin.Context) {
 			user, isAuthenticated := controller.AuthMiddleware(ctx, []byte("secret"))
 			if !isAuthenticated {
 				ctx.JSON(http.StatusUnauthorized, gin.H{"success": false, "msg": "unauthorized"})

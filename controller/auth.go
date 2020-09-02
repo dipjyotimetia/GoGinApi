@@ -24,7 +24,6 @@ func AuthMiddleware(ctx *gin.Context, jwtKey []byte) (jwt.MapClaims, bool) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
 		}
-
 		return jwtKey, nil
 	})
 
