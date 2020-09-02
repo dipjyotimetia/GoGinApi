@@ -13,8 +13,8 @@ type Register struct {
 }
 
 type ResetPassword struct {
-	ID int `json:"id"`
-	Password string `json:"password"`
+	ID              int    `json:"id"`
+	Password        string `json:"password"`
 	ConfirmPassword string `json:"confirm_password"`
 }
 
@@ -24,7 +24,7 @@ type Login struct {
 	Email    string `json:"email"`
 }
 
-type CreateReset struct{
+type CreateReset struct {
 	Email string `json:"email"`
 }
 
@@ -47,7 +47,7 @@ func HashPassword(user *Register) {
 	user.Password = string(bytes)
 }
 
-func CreateHashedPassword(password string) string{
+func CreateHashedPassword(password string) string {
 	bytes, err := bcrypt.GenerateFromPassword([]byte(password), 10)
 	if err != nil {
 		log.Fatal(err)
@@ -56,7 +56,6 @@ func CreateHashedPassword(password string) string{
 }
 
 //CheckPasswordHash compares hash with password
-func CheckPasswordHash(password, hash string) bool {
-	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
-	return err == nil
+func CheckPasswordHash(password, hash string) error {
+	return bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
 }

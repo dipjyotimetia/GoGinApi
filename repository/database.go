@@ -9,7 +9,7 @@ import (
 )
 
 const (
-	host string = "db"
+	host string = "localhost"
 	db   string = "goland"
 	user string = "goland"
 	pass string = "goland"
@@ -21,7 +21,7 @@ type DataStore interface {
 	GetAllExpense() []entity.Expense
 	ResetPassword(resetPassword entity.ResetPassword) error
 	Create(user entity.Register) error
-	Login(name, email, password, createdAt, updatedAt string,user entity.Login) error
+	Login(name, email, password, createdAt, updatedAt string, user entity.Login) error
 	CheckUserExist(user entity.Register) bool
 	CheckAndRetrieveUserIDViaEmail(createReset entity.CreateReset) (int, bool)
 	CloseDB()

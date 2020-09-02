@@ -2,6 +2,7 @@ package repository
 
 import (
 	"database/sql"
+	"errors"
 	"fmt"
 	"github.com/GoGinApi/v2/entity"
 	"github.com/GoGinApi/v2/pkg/utils"
@@ -19,7 +20,6 @@ func (db Database) ResetPassword(resetPassword entity.ResetPassword) error {
 }
 
 func (db Database) Create(user entity.Register) error {
-
 	sqlStatement := `INSERT INTO users(id,name,password,email) VALUES (DEFAULT, $1 , $2, $3)`
 
 	entity.HashPassword(&user)
@@ -47,9 +47,9 @@ func (db Database) Login(name, email, password, createdAt, updatedAt string, use
 		return err
 	}
 
-	match := entity.CheckPasswordHash(user.Password, password)
-	if !match {
-		return err
+	err = entity.CheckPasswordHash(user.Password, password)
+	if err != nil {
+		return errors.New("incorrect password")
 	}
 
 	return nil

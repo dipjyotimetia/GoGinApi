@@ -71,24 +71,24 @@ func setupRouter() *gin.Engine {
 				ctx.JSON(http.StatusUnauthorized, gin.H{"success": false, "msg": "unauthorized"})
 				return
 			}
-			ctx.JSON(http.StatusOK, gin.H{"success": true, "user": user})
+			ctx.JSON(http.StatusOK, gin.H{"success": isAuthenticated, "user": user})
 		})
 
 		v1.POST("/login", func(ctx *gin.Context) {
 			err := userController.Login(ctx)
 			if err != nil {
-				ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+				ctx.JSON(http.StatusBadRequest, gin.H{"error": "Please provide a valid password"})
 			} else {
-				ctx.JSON(http.StatusOK, gin.H{"message": "user input is valid"})
+				ctx.JSON(http.StatusOK, gin.H{"message": "User Logged in"})
 			}
 		})
 
 		v1.POST("/register", func(ctx *gin.Context) {
 			err := userController.Create(ctx)
 			if err != nil {
-				ctx.JSON(http.StatusBadRequest, gin.H{"error": 0})
+				ctx.JSON(http.StatusBadRequest, gin.H{"error": "User not able to create"})
 			} else {
-				ctx.JSON(http.StatusOK, gin.H{"message": "user input is valid"})
+				ctx.JSON(http.StatusOK, gin.H{"message": "New user is created"})
 			}
 		})
 
