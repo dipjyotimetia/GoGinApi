@@ -1,23 +1,26 @@
 package middleware
 
 import (
+	"fmt"
 	"github.com/dgrijalva/jwt-go"
-	"os"
-	"time"
+	"github.com/gin-gonic/gin"
 )
 
-func CreateToken(userid uint64) (string, error) {
-	var err error
-	//Creating Access Token
-	os.Setenv("ACCESS_SECRET", "jdnfksdmfksd") //this should be in an env file
-	atClaims := jwt.MapClaims{}
-	atClaims["authorized"] = true
-	atClaims["user_id"] = userid
-	atClaims["exp"] = time.Now().Add(time.Minute * 15).Unix()
-	at := jwt.NewWithClaims(jwt.SigningMethodHS256, atClaims)
-	token, err := at.SignedString([]byte(os.Getenv("ACCESS_SECRET")))
+func AuthMiddleware(ctx *gin.Context) bool {
+	ck, err := ctx.Request.Cookie("token")
 	if err != nil {
-		return "", err
+		fmt.Print("Verify auth token")
 	}
-	return token, nil
+	tokenString := ck.Value
+
+	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) { //nolint:staticcheck,ineffassign
+		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
+		}
+		return []byte("secret"), nil
+	})
+	if _, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
+		return true
+	}
+	return false
 }

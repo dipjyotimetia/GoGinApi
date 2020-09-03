@@ -41,7 +41,7 @@ func setupRouter() *gin.Engine {
 
 	server := gin.New()
 	server.Use(gin.Recovery(), middleware.Logger())
-	//server.Use(middleware.Cors())
+	server.Use(middleware.Cors())
 	server.Use(middleware.RequestIDMiddleware())
 
 	v1 := server.Group("/api/v1")
@@ -77,7 +77,7 @@ func setupRouter() *gin.Engine {
 		v1.POST("/login", func(ctx *gin.Context) {
 			err := userController.Login(ctx)
 			if err != nil {
-				ctx.JSON(http.StatusBadRequest, gin.H{"error": "Please provide a valid password"})
+				ctx.JSON(http.StatusUnauthorized, gin.H{"error": "Please provide a valid password"})
 			} else {
 				ctx.JSON(http.StatusOK, gin.H{"message": "User Logged in"})
 			}
@@ -104,9 +104,9 @@ func setupRouter() *gin.Engine {
 		v1.POST("/resetPassword", func(ctx *gin.Context) {
 			err := userController.ResetPassword(ctx)
 			if err != nil {
-				ctx.JSON(http.StatusBadRequest, gin.H{"error": 0})
+				ctx.JSON(http.StatusBadRequest, gin.H{"error": "user input invalid"})
 			} else {
-				ctx.JSON(http.StatusOK, gin.H{"message": "user input is valid"})
+				ctx.JSON(http.StatusOK, gin.H{"message": "password reset request successful"})
 			}
 		})
 	}

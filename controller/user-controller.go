@@ -45,7 +45,7 @@ func NewUser(service service.UserService) UserController {
 	return &userController{service: service}
 }
 
-//Initiate Password reset email with reset url
+//InitiatePasswordReset email with reset url
 func (uc *userController) InitiatePasswordReset(ctx *gin.Context) string {
 	var createReset entity.CreateReset
 	ctx.ShouldBindJSON(&createReset)
@@ -57,6 +57,7 @@ func (uc *userController) InitiatePasswordReset(ctx *gin.Context) string {
 	return "please provide valid user pass"
 }
 
+//ResetPassword password reset
 func (uc *userController) ResetPassword(ctx *gin.Context) error {
 	var resetPassword entity.ResetPassword
 	ctx.ShouldBindJSON(&resetPassword)
@@ -115,13 +116,14 @@ func (uc *userController) Login(ctx *gin.Context) error {
 	return uc.service.Login(name, email, password, createdAt, updatedAt, user)
 }
 
+//CheckUserExist check user exists
 func (uc *userController) CheckUserExist(ctx *gin.Context) bool {
 	var register entity.Register
 	ctx.ShouldBindJSON(&register)
 	return uc.service.CheckUserExist(register)
 }
 
-//Returns -1 as ID if the user doesnt exist in the table
+//CheckAndRetrieveUserIDViaEmail -1 as ID if the user doesn't exist in the table
 func (uc *userController) CheckAndRetrieveUserIDViaEmail(ctx *gin.Context) (int, bool) {
 	var createReset entity.CreateReset
 	ctx.ShouldBindJSON(&createReset)

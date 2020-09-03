@@ -47,6 +47,7 @@ func HashPassword(user *Register) {
 	user.Password = string(bytes)
 }
 
+//CreateHashedPassword created password hashed
 func CreateHashedPassword(password string) string {
 	bytes, err := bcrypt.GenerateFromPassword([]byte(password), 10)
 	if err != nil {

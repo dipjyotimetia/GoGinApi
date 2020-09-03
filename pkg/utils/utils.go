@@ -25,6 +25,7 @@ func ValidateUser(user entity.Register, err []string) []string {
 	return err
 }
 
+//ValidatePasswordReset validating password reset
 func ValidatePasswordReset(resetPassword entity.ResetPassword) (bool, string) {
 	if len(resetPassword.Password) < 4 {
 		return false, "Invalid password, password should be more than 4 characters"
