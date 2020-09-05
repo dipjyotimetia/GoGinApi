@@ -44,14 +44,25 @@ func setupRouter() *gin.Engine {
 	server.Use(middleware.Cors())
 	server.Use(middleware.RequestIDMiddleware())
 
-	v1 := server.Group("/api/v1")
-	{
-		v1.GET("/", func(c *gin.Context) {
-			c.JSON(http.StatusOK, gin.H{
-				"ping": "pong",
-			})
+	server.GET("/", func(ctx *gin.Context) {
+		ctx.JSON(http.StatusOK, gin.H{
+			"ping": "pong",
 		})
+	})
 
+	server.POST("/api/login", func(ctx *gin.Context) {
+		err := userController.Login(ctx)
+		if err != nil {
+			ctx.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
+		} else {
+			ctx.JSON(http.StatusOK, gin.H{"message": "User Logged in"})
+		}
+	})
+
+	v1 := server.Group("/api/v1")
+
+	v1.Use(middleware.AuthMiddleware())
+	{
 		v1.GET("/getExpense", func(ctx *gin.Context) {
 			ctx.JSON(http.StatusOK, expenseController.GetAllExpense())
 		})
@@ -72,15 +83,6 @@ func setupRouter() *gin.Engine {
 				return
 			}
 			ctx.JSON(http.StatusOK, gin.H{"success": isAuthenticated, "user": user})
-		})
-
-		v1.POST("/login", func(ctx *gin.Context) {
-			err := userController.Login(ctx)
-			if err != nil {
-				ctx.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
-			} else {
-				ctx.JSON(http.StatusOK, gin.H{"message": "User Logged in"})
-			}
 		})
 
 		v1.POST("/logout", func(ctx *gin.Context) {
