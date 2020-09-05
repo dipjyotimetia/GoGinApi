@@ -77,7 +77,7 @@ func setupRouter() *gin.Engine {
 		v1.POST("/login", func(ctx *gin.Context) {
 			err := userController.Login(ctx)
 			if err != nil {
-				ctx.JSON(http.StatusUnauthorized, gin.H{"error": "Please provide a valid password"})
+				ctx.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
 			} else {
 				ctx.JSON(http.StatusOK, gin.H{"message": "User Logged in"})
 			}

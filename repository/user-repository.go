@@ -42,8 +42,7 @@ func (db Database) Login(name, email, password, createdAt, updatedAt string, use
 	err := row.Scan(&id, &name, &password, &email, &createdAt, &updatedAt)
 
 	if err == sql.ErrNoRows {
-		fmt.Println(sql.ErrNoRows, "err")
-		return err
+		return fmt.Errorf("user does not exist")
 	}
 
 	err = entity.CheckPasswordHash(user.Password, password)

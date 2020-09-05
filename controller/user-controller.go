@@ -77,7 +77,7 @@ func (uc *userController) Create(ctx *gin.Context) error {
 	exists := uc.CheckUserExist(ctx)
 
 	valErr := utils.ValidateUser(user, errors.ValidationErrors)
-	if !exists {
+	if exists {
 		valErr = append(valErr, "email already exists")
 	}
 	if len(valErr) > 0 {
