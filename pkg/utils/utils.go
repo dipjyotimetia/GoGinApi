@@ -43,7 +43,7 @@ func EncodeParam(s string) string {
 	return url.QueryEscape(s)
 }
 
-//Encode string to base64
+//EncodeStringBase64 string to base64
 func EncodeStringBase64(s string) string {
 	return base64.StdEncoding.EncodeToString([]byte(s))
 }

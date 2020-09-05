@@ -29,6 +29,7 @@ type UserController interface {
 	ResetPassword(ctx *gin.Context) error
 	Create(ctx *gin.Context) error
 	Login(ctx *gin.Context) error
+	Logout(ctx *gin.Context)
 	CheckUserExist(ctx *gin.Context) bool
 	CheckAndRetrieveUserIDViaEmail(ctx *gin.Context) (int, bool)
 }
@@ -118,6 +119,13 @@ func (uc *userController) Login(ctx *gin.Context) error {
 		Expires: expirationTime,
 	})
 	return uc.service.Login(name, email, password, createdAt, updatedAt, user)
+}
+
+func (uc *userController) Logout(ctx *gin.Context) {
+	http.SetCookie(ctx.Writer, &http.Cookie{
+		Name:   "token",
+		MaxAge: -1,
+	})
 }
 
 //CheckUserExist check user exists

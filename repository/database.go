@@ -9,7 +9,7 @@ import (
 )
 
 const (
-	host string = "db"
+	host string = "localhost"
 	db   string = "goland"
 	user string = "goland"
 	pass string = "goland"

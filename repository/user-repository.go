@@ -9,6 +9,7 @@ import (
 	"log"
 )
 
+//ResetPassword reset password database
 func (db Database) ResetPassword(resetPassword entity.ResetPassword) error {
 	sqlStatement := `UPDATE users SET password = $2 WHERE id = $1`
 	if ok, _ := utils.ValidatePasswordReset(resetPassword); ok {
@@ -19,6 +20,7 @@ func (db Database) ResetPassword(resetPassword entity.ResetPassword) error {
 	return nil
 }
 
+//Create create new user in database
 func (db Database) Create(user entity.Register) error {
 	sqlStatement := `INSERT INTO users(id,name,password,email) VALUES (DEFAULT, $1 , $2, $3)`
 
@@ -32,6 +34,7 @@ func (db Database) Create(user entity.Register) error {
 	return nil
 }
 
+//Login verify login in database
 func (db Database) Login(name, email, password, createdAt, updatedAt string, user entity.Login) error {
 	sqlStatement := `SELECT * from users WHERE email = $1`
 
@@ -53,6 +56,7 @@ func (db Database) Login(name, email, password, createdAt, updatedAt string, use
 	return nil
 }
 
+//CheckUserExist in the database
 func (db Database) CheckUserExist(user entity.Register) bool {
 	sqlStatement := `SELECT id from users WHERE email = $1`
 	rows, err := db.Query(sqlStatement, user.Email)
@@ -65,6 +69,7 @@ func (db Database) CheckUserExist(user entity.Register) bool {
 	return true
 }
 
+//CheckAndRetrieveUserIDViaEmail in user database
 func (db Database) CheckAndRetrieveUserIDViaEmail(createReset entity.CreateReset) (int, bool) {
 	sqlStatement := `SELECT id from users WHERE email = $1`
 	rows, err := db.Query(sqlStatement, createReset.Email)

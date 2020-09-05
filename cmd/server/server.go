@@ -83,6 +83,11 @@ func setupRouter() *gin.Engine {
 			}
 		})
 
+		v1.POST("/logout", func(ctx *gin.Context) {
+			userController.Logout(ctx)
+			ctx.JSON(http.StatusOK, gin.H{"message": "User Logged out"})
+		})
+
 		v1.POST("/register", func(ctx *gin.Context) {
 			err := userController.Create(ctx)
 			if err != nil {
