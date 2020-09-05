@@ -101,8 +101,7 @@ func setupRouter() *gin.Engine {
 			}
 		})
 
-		//TODO: Fix me soon
-		v1.POST("/resetPassword", func(ctx *gin.Context) {
+		v1.POST("/resetPassword/:id", func(ctx *gin.Context) {
 			err := userController.ResetPassword(ctx)
 			if err != nil {
 				ctx.JSON(http.StatusBadRequest, gin.H{"error": "user input invalid"})

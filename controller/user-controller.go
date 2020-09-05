@@ -3,6 +3,7 @@ package controller
 import (
 	"fmt"
 	"net/http"
+	"strconv"
 	"time"
 
 	"github.com/GoGinApi/v2/entity"
@@ -61,6 +62,11 @@ func (uc *userController) InitiatePasswordReset(ctx *gin.Context) (string, error
 func (uc *userController) ResetPassword(ctx *gin.Context) error {
 	var resetPassword entity.ResetPassword
 	ctx.ShouldBindJSON(&resetPassword)
+	id, err := strconv.ParseUint(ctx.Param("id"), 0, 0)
+	if err != nil {
+		return err
+	}
+	resetPassword.ID = int(id)
 	return uc.service.ResetPassword(resetPassword)
 }
 
