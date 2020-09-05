@@ -1,7 +1,9 @@
 package utils
 
 import (
+	"encoding/base64"
 	"github.com/GoGinApi/v2/entity"
+	"net/url"
 	"regexp"
 )
 
@@ -34,4 +36,14 @@ func ValidatePasswordReset(resetPassword entity.ResetPassword) (bool, string) {
 		return false, "Password reset failed, passwords must match"
 	}
 	return true, "Password validated successfully"
+}
+
+//EncodeParam encode parameters
+func EncodeParam(s string) string {
+	return url.QueryEscape(s)
+}
+
+//Encode string to base64
+func EncodeStringBase64(s string) string {
+	return base64.StdEncoding.EncodeToString([]byte(s))
 }
