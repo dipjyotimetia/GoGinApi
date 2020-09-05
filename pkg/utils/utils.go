@@ -33,5 +33,5 @@ func ValidatePasswordReset(resetPassword entity.ResetPassword) (bool, string) {
 	if resetPassword.Password != resetPassword.ConfirmPassword {
 		return false, "Password reset failed, passwords must match"
 	}
-	return true, ""
+	return true, "Password validated successfully"
 }

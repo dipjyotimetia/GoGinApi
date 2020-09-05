@@ -86,21 +86,22 @@ func setupRouter() *gin.Engine {
 		v1.POST("/register", func(ctx *gin.Context) {
 			err := userController.Create(ctx)
 			if err != nil {
-				ctx.JSON(http.StatusBadRequest, gin.H{"error": "User not able to create"})
+				ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			} else {
 				ctx.JSON(http.StatusOK, gin.H{"message": "New user is created"})
 			}
 		})
 
 		v1.POST("/createReset", func(ctx *gin.Context) {
-			err := userController.InitiatePasswordReset(ctx)
-			if err != "" {
+			res, err := userController.InitiatePasswordReset(ctx)
+			if err != nil {
 				ctx.JSON(http.StatusBadRequest, gin.H{"error": "Not able to reset"})
 			} else {
-				ctx.JSON(http.StatusOK, gin.H{"message": "user input is valid"})
+				ctx.JSON(http.StatusOK, gin.H{"message": res})
 			}
 		})
 
+		//TODO: Fix me soon
 		v1.POST("/resetPassword", func(ctx *gin.Context) {
 			err := userController.ResetPassword(ctx)
 			if err != nil {

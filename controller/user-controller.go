@@ -24,7 +24,7 @@ type Claims struct {
 
 //UserController having user function
 type UserController interface {
-	InitiatePasswordReset(ctx *gin.Context) string
+	InitiatePasswordReset(ctx *gin.Context) (string, error)
 	ResetPassword(ctx *gin.Context) error
 	Create(ctx *gin.Context) error
 	Login(ctx *gin.Context) error
@@ -46,15 +46,15 @@ func NewUser(service service.UserService) UserController {
 }
 
 //InitiatePasswordReset email with reset url
-func (uc *userController) InitiatePasswordReset(ctx *gin.Context) string {
+func (uc *userController) InitiatePasswordReset(ctx *gin.Context) (string, error) {
 	var createReset entity.CreateReset
 	ctx.ShouldBindJSON(&createReset)
-	if id, ok := uc.CheckAndRetrieveUserIDViaEmail(ctx); ok {
-		link := fmt.Sprintf("%s/reset/%d", "http://localhost:8082", id)
-		return link
+	if id, ok := uc.service.CheckAndRetrieveUserIDViaEmail(createReset); ok {
+		link := fmt.Sprintf("%s/resetPassword/%d", "http://localhost:8082/api/v1", id)
+		return link, nil
 		//Reset link is returned in json response for testing purposes since no email service is integrated
 	}
-	return "please provide valid user pass"
+	return "", fmt.Errorf("please provide valid user pass")
 }
 
 //ResetPassword password reset
@@ -71,13 +71,11 @@ func (uc *userController) Create(ctx *gin.Context) error {
 	exists := uc.CheckUserExist(ctx)
 
 	valErr := utils.ValidateUser(user, errors.ValidationErrors)
-	if exists {
+	if !exists {
 		valErr = append(valErr, "email already exists")
 	}
-	fmt.Println(valErr)
 	if len(valErr) > 0 {
-		//ctx.JSON(http.Status Un processable Entity, gin.H{"success": false, "errors": valErr})
-		return fmt.Errorf("error")
+		return fmt.Errorf(valErr[0])
 	}
 	return uc.service.Create(user)
 }

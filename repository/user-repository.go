@@ -38,7 +38,6 @@ func (db Database) Login(name, email, password, createdAt, updatedAt string, use
 	row := db.QueryRow(sqlStatement, user.Email)
 
 	var id int
-	//var name, email, password, createdAt, updatedAt string
 
 	err := row.Scan(&id, &name, &password, &email, &createdAt, &updatedAt)
 
