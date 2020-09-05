@@ -29,7 +29,7 @@ type DataStore interface {
 
 //Database initialization
 type Database struct {
-	connection *sql.DB
+	*sql.DB
 }
 
 //DatabaseConnection establish database connection
@@ -50,6 +50,6 @@ func DatabaseConnection() DataStore {
 	fmt.Println("Successfully connected!")
 
 	return &Database{
-		connection: db,
+		db,
 	}
 }

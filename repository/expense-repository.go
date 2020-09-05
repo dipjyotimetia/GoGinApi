@@ -8,7 +8,7 @@ import (
 
 //CloseDB closing db connection
 func (db Database) CloseDB() {
-	err := db.connection.Close()
+	err := db.Close()
 	if err != nil {
 		panic("failed to close connection")
 	}
@@ -20,7 +20,7 @@ func (db Database) AddExpense(expense entity.Expense) int64 {
 
 	var id int64
 
-	err := db.connection.QueryRow(sqlStatement, expense.Username, expense.ExpenseType, expense.ExpenseAmount, expense.ExpenseDate).Scan(&id)
+	err := db.QueryRow(sqlStatement, expense.Username, expense.ExpenseType, expense.ExpenseAmount, expense.ExpenseDate).Scan(&id)
 	if err != nil {
 		log.Fatalf("Unable to execute the query. %v", err)
 	}
@@ -35,7 +35,7 @@ func (db Database) GetAllExpense() []entity.Expense {
 
 	sqlStatement := `SELECT * FROM expense`
 
-	rows, err := db.connection.Query(sqlStatement)
+	rows, err := db.Query(sqlStatement)
 
 	if err != nil {
 		log.Fatalf("Unable to execute the query. %v", err)
