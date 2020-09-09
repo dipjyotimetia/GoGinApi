@@ -6,11 +6,11 @@ import (
 )
 
 type UserService interface {
-	InsertUser(user entity.User) int64
-	GetAllUsers() []entity.User
-	GetUser(id int64) entity.User
-	UpdateUser(id int64, user entity.User) int64
-	DeleteUser(id int64) int64
+	ResetPassword(resetPassword entity.ResetPassword) error
+	Create(user entity.Register) error
+	Login(name, email, password, createdAt, updatedAt string, user entity.Login) error
+	CheckUserExist(user entity.Register) bool
+	CheckAndRetrieveUserIDViaEmail(createReset entity.CreateReset) (int, bool)
 }
 
 type userService struct {
@@ -21,25 +21,22 @@ func NewUser(repo repository.DataStore) UserService {
 	return &userService{userRepository: repo}
 }
 
-func (u userService) InsertUser(user entity.User) int64 {
-	u.userRepository.InsertUser(user)
-	return user.ID
+func (u userService) ResetPassword(resetPassword entity.ResetPassword) error {
+	return u.userRepository.ResetPassword(resetPassword)
 }
 
-func (u userService) GetAllUsers() []entity.User {
-	return u.userRepository.GetAllUsers()
+func (u userService) Create(user entity.Register) error {
+	return u.userRepository.Create(user)
 }
 
-func (u userService) GetUser(id int64) entity.User {
-	return u.userRepository.GetUser(id)
+func (u userService) Login(name, email, password, createdAt, updatedAt string, user entity.Login) error {
+	return u.userRepository.Login(name, email, password, createdAt, updatedAt, user)
 }
 
-func (u userService) UpdateUser(id int64, user entity.User) int64 {
-	u.userRepository.UpdateUser(id, user)
-	return user.ID
+func (u userService) CheckUserExist(user entity.Register) bool {
+	return u.userRepository.CheckUserExist(user)
 }
 
-func (u userService) DeleteUser(id int64) int64 {
-	u.userRepository.DeleteUser(id)
-	return id
+func (u userService) CheckAndRetrieveUserIDViaEmail(createReset entity.CreateReset) (int, bool) {
+	return u.userRepository.CheckAndRetrieveUserIDViaEmail(createReset)
 }

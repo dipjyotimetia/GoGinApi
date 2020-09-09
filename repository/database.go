@@ -15,24 +15,30 @@ const (
 	pass string = "goland"
 )
 
-//DataStore having all repository interface
+// DataStore having all repository interface
 type DataStore interface {
 	AddExpense(expense entity.Expense) int64
 	GetAllExpense() []entity.Expense
-	InsertUser(user entity.User) int64
-	GetAllUsers() []entity.User
-	GetUser(id int64) entity.User
-	UpdateUser(id int64, user entity.User) int64
-	DeleteUser(id int64) int64
+	GetExpense(id int64) (entity.Expense, error)
+	UpdateExpense(id int64, expense entity.Expense) error
+	DeleteExpense(id int64) error
+	ResetPassword(resetPassword entity.ResetPassword) error
+	Create(user entity.Register) error
+	Login(name, email, password, createdAt, updatedAt string, user entity.Login) error
+	CheckUserExist(user entity.Register) bool
+	CheckAndRetrieveUserIDViaEmail(createReset entity.CreateReset) (int, bool)
+	AddAccountDetails(account entity.Account) error
+	GetAccountDetails(clientID int64) (entity.Account, error)
+	UpdateAccountDetails(clientID int64, account entity.Account) error
 	CloseDB()
 }
 
-//Database initialization
+// Database initialization
 type Database struct {
-	connection *sql.DB
+	*sql.DB
 }
 
-//DatabaseConnection establish database connection
+// DatabaseConnection establish database connection
 func DatabaseConnection() DataStore {
 	dbURI := fmt.Sprintf("host=%s user=%s dbname=%s sslmode=disable password=%s", host, user, db, pass)
 	fmt.Println(dbURI)
@@ -50,6 +56,6 @@ func DatabaseConnection() DataStore {
 	fmt.Println("Successfully connected!")
 
 	return &Database{
-		connection: db,
+		db,
 	}
 }

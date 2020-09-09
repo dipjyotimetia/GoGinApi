@@ -15,7 +15,7 @@ services:
 
   db:
     restart: always
-    image: "postgres"
+    image: "postgres:12"
     environment:
       POSTGRES_USER: goland
       POSTGRES_PASSWORD: goland

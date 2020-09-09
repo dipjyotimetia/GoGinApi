@@ -5,10 +5,11 @@ import (
 	"github.com/twinj/uuid"
 )
 
+// RequestIDMiddleware requestId middleware
 func RequestIDMiddleware() gin.HandlerFunc {
-	return func(c *gin.Context) {
+	return func(ctx *gin.Context) {
 		uuid := uuid.NewV4()
-		c.Writer.Header().Set("X-Request-Id", uuid.String())
-		c.Next()
+		ctx.Writer.Header().Set("X-Request-Id", uuid.String())
+		ctx.Next()
 	}
 }

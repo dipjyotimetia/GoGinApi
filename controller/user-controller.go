@@ -1,112 +1,143 @@
 package controller
 
 import (
+	"fmt"
+	"net/http"
 	"strconv"
+	"time"
 
 	"github.com/GoGinApi/v2/entity"
+	"github.com/GoGinApi/v2/errors"
+	"github.com/GoGinApi/v2/pkg/utils"
 	"github.com/GoGinApi/v2/service"
+	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
 )
 
-//UserController having user function
-type UserController interface {
-	InsertUser(ctx *gin.Context) error
-	GetAllUsers() []entity.User
-	GetUser(ctx *gin.Context) entity.User
-	UpdateUser(ctx *gin.Context) error
-	DeleteUser(ctx *gin.Context) error
+var jwtKey = []byte("secret")
+
+// Claims jwt claims struct
+type Claims struct {
+	entity.User
+	jwt.StandardClaims
 }
 
-//userController is having serservice
+// UserController having user function
+type UserController interface {
+	InitiatePasswordReset(ctx *gin.Context) (string, error)
+	ResetPassword(ctx *gin.Context) error
+	Create(ctx *gin.Context) error
+	Login(ctx *gin.Context) error
+	Logout(ctx *gin.Context)
+	CheckUserExist(ctx *gin.Context) bool
+	CheckAndRetrieveUserIDViaEmail(ctx *gin.Context) (int, bool)
+}
+
+// userController is having service
 type userController struct {
 	service service.UserService
 }
 
-var userValidate *validator.Validate
+var _ *validator.Validate
 
-//NewUser implementing userController
+// NewUser implementing userController
 func NewUser(service service.UserService) UserController {
-	userValidate = validator.New()
+	_ = validator.New()
 	return &userController{service: service}
 }
 
-//InsertUser for create user
-func (uc *userController) InsertUser(ctx *gin.Context) error {
-	var user entity.User
-	err := ctx.ShouldBindJSON(&user)
-	if err != nil {
-		return err
+// InitiatePasswordReset email with reset url
+func (uc *userController) InitiatePasswordReset(ctx *gin.Context) (string, error) {
+	var createReset entity.CreateReset
+	ctx.ShouldBindJSON(&createReset)
+	if id, ok := uc.service.CheckAndRetrieveUserIDViaEmail(createReset); ok {
+		link := fmt.Sprintf("%s/resetPassword/%d", "http://localhost:8082/api/v1", id)
+		return link, nil
+		// Reset link is returned in json response for testing purposes since no email service is integrated
 	}
-
-	err = userValidate.Struct(user)
-	if err != nil {
-		return err
-	}
-	uc.service.InsertUser(user)
-	return nil
+	return "", fmt.Errorf("please provide valid user pass")
 }
 
-//GetAllUsers get all users
-func (uc *userController) GetAllUsers() []entity.User {
-	return uc.service.GetAllUsers()
+// ResetPassword password reset
+func (uc *userController) ResetPassword(ctx *gin.Context) error {
+	var resetPassword entity.ResetPassword
+	ctx.ShouldBindJSON(&resetPassword)
+	id, err := strconv.ParseUint(ctx.Param("id"), 0, 0)
+	if err != nil {
+		return err
+	}
+	resetPassword.ID = int(id)
+	return uc.service.ResetPassword(resetPassword)
 }
 
-//GetUser get user
-func (uc *userController) GetUser(ctx *gin.Context) entity.User {
-	var user entity.User
-	err := ctx.ShouldBindJSON(&user)
+// Create new user
+func (uc *userController) Create(ctx *gin.Context) error {
+	var user entity.Register
+	ctx.ShouldBindJSON(&user)
+	exists := uc.CheckUserExist(ctx)
 
-	id, err := strconv.ParseInt(ctx.Param("id"), 0, 0)
-
-	if err != nil {
-		return entity.User{}
+	valErr := utils.ValidateUser(user, errors.ValidationErrors)
+	if exists {
+		valErr = append(valErr, "email already exists")
 	}
-
-	user.ID = id
-	err = userValidate.Struct(user)
-
-	if err != nil {
-		return entity.User{}
+	if len(valErr) > 0 {
+		return fmt.Errorf(valErr[0])
 	}
-
-	return uc.service.GetUser(user.ID)
+	return uc.service.Create(user)
 }
 
-//UpdateUser update user
-func (uc *userController) UpdateUser(ctx *gin.Context) error {
-	var user entity.User
-	err := ctx.ShouldBindJSON(&user)
+// Login controller
+func (uc *userController) Login(ctx *gin.Context) error {
+	var user entity.Login
+	ctx.ShouldBindJSON(&user)
+	var name, email, password, createdAt, updatedAt string
 
-	if err != nil {
-		return err
+	//expiration time of the token ->30 mins
+	expirationTime := time.Now().Add(30 * time.Minute)
+
+	// Create the JWT claims, which includes the User struct and expiry time
+	claims := &Claims{
+
+		User: entity.User{
+			Name: name, Email: email, CreatedAt: createdAt, UpdatedAt: updatedAt,
+		},
+		StandardClaims: jwt.StandardClaims{
+			//expiry time, expressed as unix milliseconds
+			ExpiresAt: expirationTime.Unix(),
+		},
 	}
-	id, err := strconv.ParseInt(ctx.Param("id"), 0, 0)
 
-	if err != nil {
-		return err
-	}
-	user.ID = id
-
-	err = userValidate.Struct(user)
-
-	if err != nil {
-		return err
-	}
-	uc.service.UpdateUser(user.ID, user)
-	return nil
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+	// Create the JWT token string
+	tokenString, err := token.SignedString(jwtKey)
+	errors.HandleErr(ctx, err)
+	// c.SetCookie("token", tokenString, expirationTime, "", "*", true, false)
+	http.SetCookie(ctx.Writer, &http.Cookie{
+		Name:    "token",
+		Value:   tokenString,
+		Expires: expirationTime,
+	})
+	return uc.service.Login(name, email, password, createdAt, updatedAt, user)
 }
 
-//DeleteUser delete user
-func (uc *userController) DeleteUser(ctx *gin.Context) error {
-	var user entity.User
-	id, err := strconv.ParseInt(ctx.Param("id"), 0, 0)
+func (uc *userController) Logout(ctx *gin.Context) {
+	http.SetCookie(ctx.Writer, &http.Cookie{
+		Name:   "token",
+		MaxAge: -1,
+	})
+}
 
-	if err != nil {
-		return err
-	}
-	user.ID = id
+// CheckUserExist check user exists
+func (uc *userController) CheckUserExist(ctx *gin.Context) bool {
+	var register entity.Register
+	ctx.ShouldBindJSON(&register)
+	return uc.service.CheckUserExist(register)
+}
 
-	uc.service.DeleteUser(user.ID)
-	return nil
+// CheckAndRetrieveUserIDViaEmail -1 as ID if the user doesn't exist in the table
+func (uc *userController) CheckAndRetrieveUserIDViaEmail(ctx *gin.Context) (int, bool) {
+	var createReset entity.CreateReset
+	ctx.ShouldBindJSON(&createReset)
+	return uc.service.CheckAndRetrieveUserIDViaEmail(createReset)
 }

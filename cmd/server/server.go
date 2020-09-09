@@ -20,6 +20,10 @@ var (
 	expenseRepository = repository.DatabaseConnection()
 	expenseService    = service.NewExpense(expenseRepository)
 	expenseController = controller.NewExpense(expenseService)
+
+	accountRepository = repository.DatabaseConnection()
+	accountService    = service.NewAccountService(accountRepository)
+	accountController = controller.NewAccount(accountService)
 )
 
 func setupLogOutput() {
@@ -44,62 +48,132 @@ func setupRouter() *gin.Engine {
 	server.Use(middleware.Cors())
 	server.Use(middleware.RequestIDMiddleware())
 
+	server.GET("/", func(ctx *gin.Context) {
+		ctx.JSON(http.StatusOK, gin.H{
+			"ping": "pong",
+		})
+	})
+
+	server.POST("/api/login", func(ctx *gin.Context) {
+		err := userController.Login(ctx)
+		if err != nil {
+			ctx.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
+		} else {
+			ctx.JSON(http.StatusOK, gin.H{"message": "User Logged in"})
+		}
+	})
+
 	v1 := server.Group("/api/v1")
+
+	v1.Use(middleware.AuthMiddleware())
 	{
-		v1.GET("/", func(c *gin.Context) {
-			c.JSON(http.StatusOK, gin.H{
-				"ping": "pong",
-			})
-		})
-
-		v1.GET("/users", func(ctx *gin.Context) {
-			ctx.JSON(http.StatusOK, userController.GetAllUsers())
-		})
-
-		v1.GET("/expense", func(ctx *gin.Context) {
+		v1.GET("/getExpense", func(ctx *gin.Context) {
 			ctx.JSON(http.StatusOK, expenseController.GetAllExpense())
 		})
 
-		v1.GET("/users/:id", func(ctx *gin.Context) {
-			ctx.JSON(http.StatusOK, userController.GetUser(ctx))
+		v1.GET("/getExpense/:id", func(ctx *gin.Context) {
+			res, err := expenseController.GetExpense(ctx)
+			if err != nil {
+				ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			} else {
+				ctx.JSON(http.StatusOK, res)
+			}
 		})
 
-		v1.POST("/expense", func(ctx *gin.Context) {
+		v1.PUT("/updateExpense/:id", func(ctx *gin.Context) {
+			err := expenseController.UpdateExpense(ctx)
+			if err != nil {
+				ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			} else {
+				ctx.JSON(http.StatusOK, gin.H{"message": "expense details updated"})
+			}
+		})
+
+		v1.DELETE("/deleteExpense/:id", func(ctx *gin.Context) {
+			err := expenseController.DeleteExpense(ctx)
+			if err != nil {
+				ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			} else {
+				ctx.JSON(http.StatusOK, gin.H{"message": "expense deleted"})
+			}
+		})
+
+		v1.POST("/addExpense", func(ctx *gin.Context) {
 			err := expenseController.AddExpense(ctx)
 			if err != nil {
 				ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			} else {
-				ctx.JSON(http.StatusOK, gin.H{"message": "expense input is valid"})
+				ctx.JSON(http.StatusOK, gin.H{"message": "expense added successfully"})
 			}
 		})
 
-		v1.POST("/users", func(ctx *gin.Context) {
-			err := userController.InsertUser(ctx)
+		v1.GET("/getAccountDetails/:id", func(ctx *gin.Context) {
+			res, err := accountController.GetAccountDetails(ctx)
 			if err != nil {
 				ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			} else {
-				ctx.JSON(http.StatusOK, gin.H{"message": "user input is valid"})
+				ctx.JSON(http.StatusOK, res)
 			}
 		})
 
-		v1.PUT("/users/:id", func(ctx *gin.Context) {
-			err := userController.UpdateUser(ctx)
+		v1.PUT("/updateAccountDetails/:id", func(ctx *gin.Context) {
+			err := accountController.UpdateAccountDetails(ctx)
 			if err != nil {
 				ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			} else {
-				ctx.JSON(http.StatusOK, gin.H{"message": "video input is valid"})
+				ctx.JSON(http.StatusOK, gin.H{"message": "account details updated"})
 			}
 		})
 
-		v1.DELETE("/users/:id", func(ctx *gin.Context) {
-			err := userController.DeleteUser(ctx)
+		v1.POST("/addAccountDetails", func(ctx *gin.Context) {
+			err := accountController.AddAccountDetails(ctx)
 			if err != nil {
 				ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			} else {
-				ctx.JSON(http.StatusOK, gin.H{"message": "video input is valid"})
+				ctx.JSON(http.StatusOK, gin.H{"message": "account details added"})
+			}
+		})
+
+		v1.GET("/session", func(ctx *gin.Context) {
+			user, isAuthenticated := controller.AuthMiddleware(ctx, []byte("secret"))
+			if !isAuthenticated {
+				ctx.JSON(http.StatusUnauthorized, gin.H{"success": false, "msg": "unauthorized"})
+				return
+			}
+			ctx.JSON(http.StatusOK, gin.H{"success": isAuthenticated, "user": user})
+		})
+
+		v1.POST("/logout", func(ctx *gin.Context) {
+			userController.Logout(ctx)
+			ctx.JSON(http.StatusOK, gin.H{"message": "User Logged out"})
+		})
+
+		v1.POST("/register", func(ctx *gin.Context) {
+			err := userController.Create(ctx)
+			if err != nil {
+				ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			} else {
+				ctx.JSON(http.StatusOK, gin.H{"message": "New user is created"})
+			}
+		})
+
+		v1.POST("/createReset", func(ctx *gin.Context) {
+			res, err := userController.InitiatePasswordReset(ctx)
+			if err != nil {
+				ctx.JSON(http.StatusBadRequest, gin.H{"error": "Not able to reset"})
+			} else {
+				ctx.JSON(http.StatusOK, gin.H{"message": res})
+			}
+		})
+
+		v1.POST("/resetPassword/:id", func(ctx *gin.Context) {
+			err := userController.ResetPassword(ctx)
+			if err != nil {
+				ctx.JSON(http.StatusBadRequest, gin.H{"error": "user input invalid"})
+			} else {
+				ctx.JSON(http.StatusOK, gin.H{"message": "password reset request successful"})
 			}
 		})
 	}
-
 	return server
 }
