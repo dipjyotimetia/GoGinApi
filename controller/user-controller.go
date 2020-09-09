@@ -93,7 +93,7 @@ func (uc *userController) Login(ctx *gin.Context) error {
 	ctx.ShouldBindJSON(&user)
 	var name, email, password, createdAt, updatedAt string
 
-	//expiration time of the token ->30 mins
+	// expiration time of the token ->30 mins
 	expirationTime := time.Now().Add(30 * time.Minute)
 
 	// Create the JWT claims, which includes the User struct and expiry time
@@ -103,7 +103,7 @@ func (uc *userController) Login(ctx *gin.Context) error {
 			Name: name, Email: email, CreatedAt: createdAt, UpdatedAt: updatedAt,
 		},
 		StandardClaims: jwt.StandardClaims{
-			//expiry time, expressed as unix milliseconds
+			// expiry time, expressed as unix milliseconds
 			ExpiresAt: expirationTime.Unix(),
 		},
 	}
