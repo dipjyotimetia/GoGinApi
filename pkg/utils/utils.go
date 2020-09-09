@@ -27,7 +27,7 @@ func ValidateUser(user entity.Register, err []string) []string {
 	return err
 }
 
-//ValidatePasswordReset validating password reset
+// ValidatePasswordReset validating password reset
 func ValidatePasswordReset(resetPassword entity.ResetPassword) (bool, string) {
 	if len(resetPassword.Password) < 4 {
 		return false, "Invalid password, password should be more than 4 characters"
@@ -38,12 +38,12 @@ func ValidatePasswordReset(resetPassword entity.ResetPassword) (bool, string) {
 	return true, "Password validated successfully"
 }
 
-//EncodeParam encode parameters
+// EncodeParam encode parameters
 func EncodeParam(s string) string {
 	return url.QueryEscape(s)
 }
 
-//EncodeStringBase64 string to base64
+// EncodeStringBase64 string to base64
 func EncodeStringBase64(s string) string {
 	return base64.StdEncoding.EncodeToString([]byte(s))
 }

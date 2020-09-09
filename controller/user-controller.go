@@ -17,13 +17,13 @@ import (
 
 var jwtKey = []byte("secret")
 
-//Claims jwt claims struct
+// Claims jwt claims struct
 type Claims struct {
 	entity.User
 	jwt.StandardClaims
 }
 
-//UserController having user function
+// UserController having user function
 type UserController interface {
 	InitiatePasswordReset(ctx *gin.Context) (string, error)
 	ResetPassword(ctx *gin.Context) error
@@ -34,32 +34,32 @@ type UserController interface {
 	CheckAndRetrieveUserIDViaEmail(ctx *gin.Context) (int, bool)
 }
 
-//userController is having service
+// userController is having service
 type userController struct {
 	service service.UserService
 }
 
 var _ *validator.Validate
 
-//NewUser implementing userController
+// NewUser implementing userController
 func NewUser(service service.UserService) UserController {
 	_ = validator.New()
 	return &userController{service: service}
 }
 
-//InitiatePasswordReset email with reset url
+// InitiatePasswordReset email with reset url
 func (uc *userController) InitiatePasswordReset(ctx *gin.Context) (string, error) {
 	var createReset entity.CreateReset
 	ctx.ShouldBindJSON(&createReset)
 	if id, ok := uc.service.CheckAndRetrieveUserIDViaEmail(createReset); ok {
 		link := fmt.Sprintf("%s/resetPassword/%d", "http://localhost:8082/api/v1", id)
 		return link, nil
-		//Reset link is returned in json response for testing purposes since no email service is integrated
+		// Reset link is returned in json response for testing purposes since no email service is integrated
 	}
 	return "", fmt.Errorf("please provide valid user pass")
 }
 
-//ResetPassword password reset
+// ResetPassword password reset
 func (uc *userController) ResetPassword(ctx *gin.Context) error {
 	var resetPassword entity.ResetPassword
 	ctx.ShouldBindJSON(&resetPassword)
@@ -71,7 +71,7 @@ func (uc *userController) ResetPassword(ctx *gin.Context) error {
 	return uc.service.ResetPassword(resetPassword)
 }
 
-//Create new user
+// Create new user
 func (uc *userController) Create(ctx *gin.Context) error {
 	var user entity.Register
 	ctx.ShouldBindJSON(&user)
@@ -128,14 +128,14 @@ func (uc *userController) Logout(ctx *gin.Context) {
 	})
 }
 
-//CheckUserExist check user exists
+// CheckUserExist check user exists
 func (uc *userController) CheckUserExist(ctx *gin.Context) bool {
 	var register entity.Register
 	ctx.ShouldBindJSON(&register)
 	return uc.service.CheckUserExist(register)
 }
 
-//CheckAndRetrieveUserIDViaEmail -1 as ID if the user doesn't exist in the table
+// CheckAndRetrieveUserIDViaEmail -1 as ID if the user doesn't exist in the table
 func (uc *userController) CheckAndRetrieveUserIDViaEmail(ctx *gin.Context) (int, bool) {
 	var createReset entity.CreateReset
 	ctx.ShouldBindJSON(&createReset)

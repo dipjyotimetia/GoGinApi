@@ -2,6 +2,7 @@ DROP TABLE IF EXISTS people;
 DROP TABLE IF EXISTS videos;
 DROP TABLE IF EXISTS expense;
 DROP TABLE IF EXISTS users;
+DROP TABLE IF EXISTS accounts;
 
 CREATE TABLE IF NOT EXISTS people
 (
@@ -39,15 +40,14 @@ CREATE TABLE IF NOT EXISTS expense
     CONSTRAINT expenseInfo_pkey PRIMARY KEY (eid)
 );
 
--- CREATE TABLE IF NOT EXISTS users
--- (
---     uid      SERIAL       NOT NULL,
---     name     VARCHAR(100) NOT NULL,
---     location VARCHAR(500) NOT NULL,
---     age      INT,
---     CONSTRAINT userinfo_pkey PRIMARY KEY (uid)
--- );
-
+CREATE TABLE IF NOT EXISTS accounts
+(
+    clientId     int          NOT NULL,
+    currencyCode VARCHAR(100) NOT NULL,
+    statusCode   VARCHAR(100) NOT NULL,
+    balance      float8       NOT NULL,
+    CONSTRAINT clientId_pkey PRIMARY KEY (clientId)
+);
 
 CREATE TABLE IF NOT EXISTS users
 (
@@ -57,4 +57,4 @@ CREATE TABLE IF NOT EXISTS users
     email      VARCHAR(355) UNIQUE NOT NULL,
     created_on TIMESTAMP           NOT NULL default current_timestamp,
     updated_at TIMESTAMP           NOT NULL default current_timestamp
-)
+);

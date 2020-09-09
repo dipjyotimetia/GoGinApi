@@ -28,7 +28,7 @@ type CreateReset struct {
 	Email string `json:"email"`
 }
 
-//User struct
+// User struct
 type User struct {
 	//ID string
 	Password  string `json:"password"`
@@ -38,7 +38,7 @@ type User struct {
 	UpdatedAt string `json:"updated_at"`
 }
 
-//HashPassword hashes user password
+// HashPassword hashes user password
 func HashPassword(user *Register) {
 	bytes, err := bcrypt.GenerateFromPassword([]byte(user.Password), 10)
 	if err != nil {
@@ -47,7 +47,7 @@ func HashPassword(user *Register) {
 	user.Password = string(bytes)
 }
 
-//CreateHashedPassword created password hashed
+// CreateHashedPassword created password hashed
 func CreateHashedPassword(password string) string {
 	bytes, err := bcrypt.GenerateFromPassword([]byte(password), 10)
 	if err != nil {
@@ -56,7 +56,7 @@ func CreateHashedPassword(password string) string {
 	return string(bytes)
 }
 
-//CheckPasswordHash compares hash with password
+// CheckPasswordHash compares hash with password
 func CheckPasswordHash(password, hash string) error {
 	return bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
 }

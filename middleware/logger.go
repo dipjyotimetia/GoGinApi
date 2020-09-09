@@ -6,7 +6,7 @@ import (
 	"time"
 )
 
-//Logger adding logging
+// Logger adding logging
 func Logger() gin.HandlerFunc {
 	return gin.LoggerWithFormatter(func(params gin.LogFormatterParams) string {
 		return fmt.Sprintf("%s - [%s] %s %s %d %s %s %s\n",

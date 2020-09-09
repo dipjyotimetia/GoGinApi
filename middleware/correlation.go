@@ -5,7 +5,7 @@ import (
 	"github.com/twinj/uuid"
 )
 
-//RequestIDMiddleware requestId middleware
+// RequestIDMiddleware requestId middleware
 func RequestIDMiddleware() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		uuid := uuid.NewV4()

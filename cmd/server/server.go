@@ -20,6 +20,10 @@ var (
 	expenseRepository = repository.DatabaseConnection()
 	expenseService    = service.NewExpense(expenseRepository)
 	expenseController = controller.NewExpense(expenseService)
+
+	accountRepository = repository.DatabaseConnection()
+	accountService    = service.NewAccountService(accountRepository)
+	accountController = controller.NewAccount(accountService)
 )
 
 func setupLogOutput() {
@@ -73,6 +77,33 @@ func setupRouter() *gin.Engine {
 				ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			} else {
 				ctx.JSON(http.StatusOK, gin.H{"message": "expense input is valid"})
+			}
+		})
+
+		v1.GET("/getAccountDetails/:id", func(ctx *gin.Context) {
+			res, err := accountController.GetAccountDetails(ctx)
+			if err != nil {
+				ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			} else {
+				ctx.JSON(http.StatusOK, res)
+			}
+		})
+
+		v1.PUT("/updateAccountDetails/:id", func(ctx *gin.Context) {
+			err := accountController.UpdateAccountDetails(ctx)
+			if err != nil {
+				ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			} else {
+				ctx.JSON(http.StatusOK, gin.H{"message": "account details updated"})
+			}
+		})
+
+		v1.POST("/addAccountDetails", func(ctx *gin.Context) {
+			err := accountController.AddAccountDetails(ctx)
+			if err != nil {
+				ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			} else {
+				ctx.JSON(http.StatusOK, gin.H{"message": "account details added"})
 			}
 		})
 

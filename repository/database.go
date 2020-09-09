@@ -9,13 +9,13 @@ import (
 )
 
 const (
-	host string = "db"
+	host string = "localhost"
 	db   string = "goland"
 	user string = "goland"
 	pass string = "goland"
 )
 
-//DataStore having all repository interface
+// DataStore having all repository interface
 type DataStore interface {
 	AddExpense(expense entity.Expense) int64
 	GetAllExpense() []entity.Expense
@@ -24,15 +24,18 @@ type DataStore interface {
 	Login(name, email, password, createdAt, updatedAt string, user entity.Login) error
 	CheckUserExist(user entity.Register) bool
 	CheckAndRetrieveUserIDViaEmail(createReset entity.CreateReset) (int, bool)
+	AddAccountDetails(account entity.Account) error
+	GetAccountDetails(clientID int64) (entity.Account, error)
+	UpdateAccountDetails(clientID int64, account entity.Account) error
 	CloseDB()
 }
 
-//Database initialization
+// Database initialization
 type Database struct {
 	*sql.DB
 }
 
-//DatabaseConnection establish database connection
+// DatabaseConnection establish database connection
 func DatabaseConnection() DataStore {
 	dbURI := fmt.Sprintf("host=%s user=%s dbname=%s sslmode=disable password=%s", host, user, db, pass)
 	fmt.Println(dbURI)
