@@ -1,16 +1,18 @@
 package repository
 
 import (
+	"fmt"
 	"log"
 
 	"github.com/GoGinApi/v2/entity"
 )
 
 const (
-	addExpenseStatement    = `INSERT INTO expense (username, expenseType, expenseAmount, expenseDate) VALUES ($1,$2,$3,$4) RETURNING eid`
+	addExpenseStatement    = `INSERT INTO expense (clientID, expenseType, expenseAmount, expenseDate) VALUES ($1,$2,$3,$4) RETURNING eid`
 	getAllExpenseStatement = `SELECT * FROM expense`
-	//getExpenseStatement = `SELECT * FROM users WHERE uid=$1`
-	//deleteExpenseStatement = `DELETE FROM users WHERE uid=$1`
+	getExpenseStatement    = `SELECT * FROM expense WHERE eid=$1`
+	updateExpenseStatement = `UPDATE expense SET clientID=$2, expenseType=$3, expenseAmount=$4,expenseDate=$5 WHERE eid=$1`
+	deleteExpenseStatement = `DELETE FROM expense WHERE eid=$1`
 )
 
 // CloseDB closing db connection
@@ -25,7 +27,7 @@ func (db Database) CloseDB() {
 func (db Database) AddExpense(expense entity.Expense) int64 {
 	var id int64
 
-	err := db.QueryRow(addExpenseStatement, expense.Username, expense.ExpenseType, expense.ExpenseAmount, expense.ExpenseDate).Scan(&id)
+	err := db.QueryRow(addExpenseStatement, expense.ClientID, expense.ExpenseType, expense.ExpenseAmount, expense.ExpenseDate).Scan(&id)
 	if err != nil {
 		log.Fatalf("Unable to execute the query. %v", err)
 	}
@@ -52,7 +54,7 @@ func (db Database) GetAllExpense() []entity.Expense {
 		var expense entity.Expense
 
 		// unmarshal the row object to user
-		err = rows.Scan(&expense.ExpenseID, &expense.Username, &expense.ExpenseType, &expense.ExpenseAmount, &expense.ExpenseDate)
+		err = rows.Scan(&expense.ExpenseID, &expense.ClientID, &expense.ExpenseType, &expense.ExpenseAmount, &expense.ExpenseDate)
 
 		if err != nil {
 			log.Fatalf("Unable to scan the row. %v", err)
@@ -64,52 +66,49 @@ func (db Database) GetAllExpense() []entity.Expense {
 	return expenses
 }
 
-//// get one user from the DB by its userid
-//func (db UserDatabase) GetExpense(id int64) entity.User { // create a user of models.User type
-//	var user entity.User
-//
-//	// create the select sql query
-//	sqlStatement := `SELECT * FROM users WHERE uid=$1`
-//
-//	// execute the sql statement
-//	row := db.connection.QueryRow(sqlStatement, id)
-//
-//	// unmarshal the row object to user
-//	err := row.Scan(&user.ID, &user.Name, &user.Location, &user.Age)
-//
-//	switch err {
-//	case sql.ErrNoRows:
-//		fmt.Println("No rows were returned!")
-//		return user
-//	case nil:
-//		return user
-//	default:
-//		log.Fatalf("Unable to scan the row. %v", err)
-//	}
-//
-//	// return empty user on error
-//	return user
-//}
+// get one expense from the DB by its expense id
+func (db Database) GetExpense(id int64) (entity.Expense, error) {
+	var expense entity.Expense
 
-//// delete user in the DB
-//func (db UserDatabase) DeleteExpense(id int64) int64 { // create the delete sql query
-//	sqlStatement := `DELETE FROM users WHERE uid=$1`
-//
-//	// execute the sql statement
-//	res, err := db.connection.Exec(sqlStatement, id)
-//
-//	if err != nil {
-//		log.Fatalf("Unable to execute the query. %v", err)
-//	}
-//
-//	// check how many rows affected
-//	rowsAffected, err := res.RowsAffected()
-//
-//	if err != nil {
-//		log.Fatalf("Error while checking the affected rows. %v", err)
-//	}
-//
-//	fmt.Printf("Total rows/record affected %v", rowsAffected)
-//
-//	return rowsAffected
-//}
+	// execute the sql statement
+	row := db.QueryRow(getExpenseStatement, id)
+
+	// unmarshal the row object to user
+	err := row.Scan(&expense.ExpenseID, &expense.ClientID, &expense.ExpenseType, &expense.ExpenseAmount, &expense.ExpenseDate)
+
+	if err != nil {
+		return expense, fmt.Errorf("no rows found")
+	}
+
+	return expense, nil
+}
+
+func (db Database) UpdateExpense(id int64, expense entity.Expense) error {
+	res, err := db.Exec(updateExpenseStatement, id, expense.ClientID, expense.ExpenseType, expense.ExpenseAmount, expense.ExpenseDate)
+
+	if err != nil {
+		return fmt.Errorf("unable to execute the query. %v", err)
+	}
+	_, err = res.RowsAffected()
+	if err != nil {
+		return fmt.Errorf("error while checking the affected rows. %v", err)
+	}
+
+	return nil
+}
+
+// delete expense in the DB
+func (db Database) DeleteExpense(id int64) error {
+	res, err := db.Exec(deleteExpenseStatement, id)
+
+	if err != nil {
+		log.Fatalf("Unable to execute the query. %v", err)
+	}
+	_, err = res.RowsAffected()
+
+	if err != nil {
+		return fmt.Errorf("error while checking the affected rows. %v", err)
+	}
+
+	return nil
+}

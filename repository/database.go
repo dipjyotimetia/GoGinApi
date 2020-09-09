@@ -9,7 +9,7 @@ import (
 )
 
 const (
-	host string = "localhost"
+	host string = "db"
 	db   string = "goland"
 	user string = "goland"
 	pass string = "goland"
@@ -19,6 +19,9 @@ const (
 type DataStore interface {
 	AddExpense(expense entity.Expense) int64
 	GetAllExpense() []entity.Expense
+	GetExpense(id int64) (entity.Expense, error)
+	UpdateExpense(id int64, expense entity.Expense) error
+	DeleteExpense(id int64) error
 	ResetPassword(resetPassword entity.ResetPassword) error
 	Create(user entity.Register) error
 	Login(name, email, password, createdAt, updatedAt string, user entity.Login) error

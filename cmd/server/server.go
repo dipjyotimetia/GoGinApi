@@ -71,12 +71,39 @@ func setupRouter() *gin.Engine {
 			ctx.JSON(http.StatusOK, expenseController.GetAllExpense())
 		})
 
+		v1.GET("/getExpense/:id", func(ctx *gin.Context) {
+			res, err := expenseController.GetExpense(ctx)
+			if err != nil {
+				ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			} else {
+				ctx.JSON(http.StatusOK, res)
+			}
+		})
+
+		v1.PUT("/updateExpense/:id", func(ctx *gin.Context) {
+			err := expenseController.UpdateExpense(ctx)
+			if err != nil {
+				ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			} else {
+				ctx.JSON(http.StatusOK, gin.H{"message": "expense details updated"})
+			}
+		})
+
+		v1.DELETE("/deleteExpense/:id", func(ctx *gin.Context) {
+			err := expenseController.DeleteExpense(ctx)
+			if err != nil {
+				ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			} else {
+				ctx.JSON(http.StatusOK, gin.H{"message": "expense deleted"})
+			}
+		})
+
 		v1.POST("/addExpense", func(ctx *gin.Context) {
 			err := expenseController.AddExpense(ctx)
 			if err != nil {
 				ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			} else {
-				ctx.JSON(http.StatusOK, gin.H{"message": "expense input is valid"})
+				ctx.JSON(http.StatusOK, gin.H{"message": "expense added successfully"})
 			}
 		})
 
