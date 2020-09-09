@@ -52,7 +52,7 @@ func (ec *expenseController) GetAllExpense() []entity.Expense {
 
 func (ec *expenseController) GetExpense(ctx *gin.Context) (entity.Expense, error) {
 	var expense entity.Expense
-	err := ctx.ShouldBindJSON(&expense)
+	err := ctx.ShouldBindJSON(&expense) //nolint:ineffassign
 	id, err := strconv.ParseInt(ctx.Param("id"), 0, 0)
 	if err != nil {
 		return expense, err
@@ -63,7 +63,7 @@ func (ec *expenseController) GetExpense(ctx *gin.Context) (entity.Expense, error
 
 func (ec *expenseController) UpdateExpense(ctx *gin.Context) error {
 	var expense entity.Expense
-	err := ctx.ShouldBindJSON(&expense)
+	err := ctx.ShouldBindJSON(&expense) //nolint:ineffassign
 	id, err := strconv.ParseInt(ctx.Param("id"), 0, 0)
 	if err != nil {
 		return err

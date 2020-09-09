@@ -37,7 +37,7 @@ func (ac *accountController) AddAccountDetails(ctx *gin.Context) error {
 
 func (ac *accountController) GetAccountDetails(ctx *gin.Context) (entity.Account, error) {
 	var account entity.Account
-	err := ctx.ShouldBindJSON(&account)
+	err := ctx.ShouldBindJSON(&account) //nolint:ineffassign
 	id, err := strconv.ParseInt(ctx.Param("id"), 0, 0)
 	if err != nil {
 		return entity.Account{}, nil
@@ -48,7 +48,7 @@ func (ac *accountController) GetAccountDetails(ctx *gin.Context) (entity.Account
 
 func (ac *accountController) UpdateAccountDetails(ctx *gin.Context) error {
 	var account entity.Account
-	err := ctx.ShouldBindJSON(&account)
+	err := ctx.ShouldBindJSON(&account) //nolint:ineffassign
 	id, err := strconv.ParseInt(ctx.Param("id"), 0, 0)
 	if err != nil {
 		return err

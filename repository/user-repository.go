@@ -10,7 +10,7 @@ import (
 )
 
 const (
-	resetPasswordStatement  = `UPDATE users SET password = $2 WHERE id = $1`
+	resetPasswordStatement  = `UPDATE users SET password = $2 WHERE id = $1` //nolint:gosec
 	createUserStatement     = `INSERT INTO users(id,name,password,email) VALUES (DEFAULT, $1 , $2, $3)`
 	loginStatement          = `SELECT * from users WHERE email = $1`
 	getUserStatement        = `SELECT id from users WHERE email = $1`

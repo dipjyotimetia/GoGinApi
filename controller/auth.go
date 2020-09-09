@@ -9,7 +9,7 @@ import (
 
 // AuthMiddleware checks that token is valid, see https://godoc.org/github.com/dgrijalva/jwt-go#example-Parse--Hmac
 func AuthMiddleware(ctx *gin.Context, jwtKey []byte) (jwt.MapClaims, bool) {
-	//obtain session token from the requests cookies
+	// obtain session token from the requests cookies
 	ck, err := ctx.Request.Cookie("token")
 	fmt.Println(ck, "coookie")
 	if err != nil {
