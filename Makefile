@@ -43,6 +43,7 @@ update:
 .PHONY:kube-up
 kube-up:
 	@echo "Kubernetes up"
+	kubectl delete secret postgres-secret
 	kubectl create -f config/kubernetes/postgres-secret.yaml
 	kubectl describe secrets  postgres-secret
 	kubectl apply -f config/kubernetes/postgres-db-pv.yaml

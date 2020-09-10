@@ -9,9 +9,11 @@ services:
       - overlay
     ports:
       - 8082:8082
-    restart: always
     depends_on:
       - db
+    environment:
+      WAIT_HOSTS: postgres:5432
+    restart: on-failure
 
   db:
     restart: always
