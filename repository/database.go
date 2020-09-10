@@ -9,7 +9,7 @@ import (
 )
 
 const (
-	host string = "db"
+	host string = "fullstack-postgres"
 	db   string = "goland"
 	user string = "goland"
 	pass string = "goland"
