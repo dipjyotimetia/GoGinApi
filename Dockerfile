@@ -2,6 +2,10 @@ FROM golang:1.14-alpine
 
 RUN apk add --no-cache git
 
+# Add docker compose wait for database https://github.com/ufoscout/docker-compose-wait
+ADD https://github.com/ufoscout/docker-compose-wait/releases/download/2.7.3/wait /wait
+RUN chmod +x /wait
+
 # ENV GO111MODULE=on
 
 # Set the Current Working Directory inside the container

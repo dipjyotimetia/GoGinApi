@@ -9,11 +9,13 @@ services:
       - overlay
     ports:
       - 8082:8082
-    restart: always
     depends_on:
-      - db
+      - fullstack-postgres
+    environment:
+      WAIT_HOSTS: postgres:5432
+    restart: on-failure
 
-  db:
+  fullstack-postgres:
     restart: always
     image: "postgres:12"
     environment:
