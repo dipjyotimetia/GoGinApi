@@ -43,7 +43,6 @@ update:
 .PHONY:kube-up
 kube-up:
 	@echo "Kubernetes up"
-	kubectl delete secret postgres-secret
 	kubectl create -f config/kubernetes/postgres-secret.yaml
 	kubectl describe secrets  postgres-secret
 	kubectl apply -f config/kubernetes/postgres-db-pv.yaml
@@ -52,3 +51,25 @@ kube-up:
     kubectl apply -f config/kubernetes/postgres-db-service.yaml
     kubectl apply -f config/kubernetes/app-postgres-deployment.yaml
     kubectl apply -f config/kubernetes/app-postgres-service.yaml
+    kubectl get pods
+
+    kubectl get services
+    kubectl get services fullstack-app-postgres
+
+	#Display information about the Deployment:
+ 	kubectl get deployments hello-world
+ 	kubectl describe deployments hello-world
+
+	#Create a Service object that exposes the deployment:
+    kubectl expose deployment fullstack-app-postgres --type=LoadBalancer --name=goginapi
+    #Display information about the Service:
+    kubectl get services fullstack-app
+
+.PHONY:kube-down
+kube-down:
+	@echo "Kubernetes down"
+	kubectl delete services goginapi
+	kubectl delete deployment fullstack-app-postgres
+	kubectl delete secret postgres-secret
+	kubectl delete deployment --all
+	kubectl delete pods --all
