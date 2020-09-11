@@ -63,6 +63,47 @@ func setupRouter() *gin.Engine {
 		}
 	})
 
+	server.GET("/api/session", func(ctx *gin.Context) {
+		user, isAuthenticated := controller.AuthMiddleware(ctx, []byte("secret"))
+		if !isAuthenticated {
+			ctx.JSON(http.StatusUnauthorized, gin.H{"success": false, "msg": "unauthorized"})
+			return
+		}
+		ctx.JSON(http.StatusOK, gin.H{"success": isAuthenticated, "user": user})
+	})
+
+	server.POST("/api/logout", func(ctx *gin.Context) {
+		userController.Logout(ctx)
+		ctx.JSON(http.StatusOK, gin.H{"message": "User Logged out"})
+	})
+
+	server.POST("/api/register", func(ctx *gin.Context) {
+		err := userController.Create(ctx)
+		if err != nil {
+			ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		} else {
+			ctx.JSON(http.StatusOK, gin.H{"message": "New user is created"})
+		}
+	})
+
+	server.POST("/api/createReset", func(ctx *gin.Context) {
+		res, err := userController.InitiatePasswordReset(ctx)
+		if err != nil {
+			ctx.JSON(http.StatusBadRequest, gin.H{"error": "Not able to reset"})
+		} else {
+			ctx.JSON(http.StatusOK, gin.H{"message": res})
+		}
+	})
+
+	server.POST("/api/resetPassword/:id", func(ctx *gin.Context) {
+		err := userController.ResetPassword(ctx)
+		if err != nil {
+			ctx.JSON(http.StatusBadRequest, gin.H{"error": "user input invalid"})
+		} else {
+			ctx.JSON(http.StatusOK, gin.H{"message": "password reset request successful"})
+		}
+	})
+
 	v1 := server.Group("/api/v1")
 
 	v1.Use(middleware.AuthMiddleware())
@@ -131,47 +172,6 @@ func setupRouter() *gin.Engine {
 				ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			} else {
 				ctx.JSON(http.StatusOK, gin.H{"message": "account details added"})
-			}
-		})
-
-		v1.GET("/session", func(ctx *gin.Context) {
-			user, isAuthenticated := controller.AuthMiddleware(ctx, []byte("secret"))
-			if !isAuthenticated {
-				ctx.JSON(http.StatusUnauthorized, gin.H{"success": false, "msg": "unauthorized"})
-				return
-			}
-			ctx.JSON(http.StatusOK, gin.H{"success": isAuthenticated, "user": user})
-		})
-
-		v1.POST("/logout", func(ctx *gin.Context) {
-			userController.Logout(ctx)
-			ctx.JSON(http.StatusOK, gin.H{"message": "User Logged out"})
-		})
-
-		v1.POST("/register", func(ctx *gin.Context) {
-			err := userController.Create(ctx)
-			if err != nil {
-				ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-			} else {
-				ctx.JSON(http.StatusOK, gin.H{"message": "New user is created"})
-			}
-		})
-
-		v1.POST("/createReset", func(ctx *gin.Context) {
-			res, err := userController.InitiatePasswordReset(ctx)
-			if err != nil {
-				ctx.JSON(http.StatusBadRequest, gin.H{"error": "Not able to reset"})
-			} else {
-				ctx.JSON(http.StatusOK, gin.H{"message": res})
-			}
-		})
-
-		v1.POST("/resetPassword/:id", func(ctx *gin.Context) {
-			err := userController.ResetPassword(ctx)
-			if err != nil {
-				ctx.JSON(http.StatusBadRequest, gin.H{"error": "user input invalid"})
-			} else {
-				ctx.JSON(http.StatusOK, gin.H{"message": "password reset request successful"})
 			}
 		})
 	}
