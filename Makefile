@@ -44,7 +44,8 @@ update:
 kube-up:
 	@echo "Kubernetes up"
 	kubectl create -f config/kubernetes/postgres-secret.yaml
-	kubectl describe secrets  postgres-secret
+	kubectl describe secrets postgres-secret
+	kubectl apply -f config/kubernetes/postgres-configmap.yaml
 	kubectl apply -f config/kubernetes/postgres-db-pv.yaml
     kubectl apply -f config/kubernetes/postgres-db-pvc.yaml
     kubectl apply -f config/kubernetes/postgres-db-deployment.yaml
@@ -57,19 +58,22 @@ kube-up:
     kubectl get services fullstack-app-postgres
 
 	#Display information about the Deployment:
- 	kubectl get deployments hello-world
- 	kubectl describe deployments hello-world
+ 	kubectl get deployments fullstack-app-postgres
+ 	kubectl describe deployments fullstack-app-postgres
 
 	#Create a Service object that exposes the deployment:
     kubectl expose deployment fullstack-app-postgres --type=LoadBalancer --name=goginapi
     #Display information about the Service:
-    kubectl get services fullstack-app
+    kubectl get services goginapi
 
 .PHONY:kube-down
 kube-down:
 	@echo "Kubernetes down"
 	kubectl delete services goginapi
 	kubectl delete deployment fullstack-app-postgres
+	kubectl delete configmap postgres-config
+	kubectl delete persistentvolumeclaim postgres-pv-claim
+    kubectl delete persistentvolume postgres-pv-volume
 	kubectl delete secret postgres-secret
 	kubectl delete deployment --all
 	kubectl delete pods --all
