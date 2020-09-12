@@ -78,6 +78,13 @@ kube-down:
 	kubectl delete deployment --all
 	kubectl delete pods --all
 
+.PHONY:kube-clean
+kube-clean:
+	kubectl delete deployments --all
+    kubectl delete services --all
+    kubectl delete pods --all
+    kubectl delete daemonset --all
+
 .PHONY:kube-dash-token
 kube-dash-token:
 	@echo "Kubernetes dashboard token generate"
