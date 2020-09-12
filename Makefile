@@ -20,13 +20,13 @@ clean:
 
 .PHONY:run
 run:
-	go run server.go
+	go run cmd/server.go
 
 .PHONY:compose
 compose:
 	@echo build docker image
-	docker-compose down
-	docker-compose up --remove-orphans
+	docker-compose down --remove-orphans
+	docker-compose up
 
 .PHONY:prune
 prune:
@@ -77,3 +77,15 @@ kube-down:
 	kubectl delete secret postgres-secret
 	kubectl delete deployment --all
 	kubectl delete pods --all
+
+.PHONY:kube-dash-token
+kube-dash-token:
+	@echo "Kubernetes dashboard token generate"
+	kubectl -n kubernetes-dashboard describe secret $(kubectl -n kubernetes-dashboard get secret | grep admin-user | awk '{print $1}')
+   #kubectl -n kubernetes-dashboard describe secret $(kubectl -n kubernetes-dashboard get secret | sls admin-user | ForEach-Object { $_ -Split '\s+' } | Select -First 1)
+   #http://localhost:8001/api/v1/namespaces/kubernetes-dashboard/services/https:kubernetes-dashboard:/proxy/
+
+.PHONY:kube-dashboard
+kube-dashboard:
+	@echo "Kubernetes dashboard"
+	kubectl proxy

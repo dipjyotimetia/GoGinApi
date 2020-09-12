@@ -17,7 +17,7 @@ spec:
       containers:
         - name: fullstack-app-postgres
           image: dipjyotimetia/goginapi:latest       # The image we are getting from dockerhub
-          imagePullPolicy: IfNotPresent             # If we have not pulled it before, get it from dockerhub
+          imagePullPolicy: Always             # If we have not pulled it before, get it from dockerhub
           ports:
             - name: http
               containerPort: 8082                   # Should match the port number that the Go application listens on
