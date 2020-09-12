@@ -9,3 +9,5 @@ mockgen -source=repository/user-repository.go -destination=mocks/user-mock/mock_
 ```bash
 make compose
 ```
+
+docker-compose -f docker-compose-infra up -d

@@ -10,6 +10,7 @@ import (
 	"github.com/GoGinApi/v2/repository"
 	"github.com/GoGinApi/v2/service"
 	"github.com/gin-gonic/gin"
+	"github.com/zsais/go-gin-prometheus"
 )
 
 var (
@@ -42,12 +43,13 @@ func setupRouter() *gin.Engine {
 	// defer userRepository.CloseDB()
 
 	setupLogOutput()
+	p := ginprometheus.NewPrometheus("test")
 
 	server := gin.New()
 	server.Use(gin.Recovery(), middleware.Logger())
 	server.Use(middleware.Cors())
 	server.Use(middleware.RequestIDMiddleware())
-
+	server.Use(p.HandlerFunc())
 	server.GET("/", func(ctx *gin.Context) {
 		ctx.JSON(http.StatusOK, gin.H{
 			"ping": "pong",
