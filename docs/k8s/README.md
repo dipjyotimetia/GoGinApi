@@ -41,16 +41,16 @@ kubectl get pods
 kubectl get services
 kubectl get services fullstack-app-postgres
 ```
-###Display information about the Deployment:
+### Display information about the Deployment:
 ```shell script
 kubectl get deployments fullstack-app-postgres
 kubectl describe deployments fullstack-app-postgres
 ```
-###Create a Service object that exposes the deployment:
+### Create a Service object that exposes the deployment:
 ```shell script
 kubectl expose deployment fullstack-app-postgres --type=LoadBalancer --name=goginapi
 ```
-###Display information about the Service:
+### Display information about the Service:
 ```shell script
 kubectl get services goginapi
 ```
