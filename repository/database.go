@@ -28,8 +28,8 @@ type DataStore interface {
 	CheckUserExist(user entity.Register) bool
 	CheckAndRetrieveUserIDViaEmail(createReset entity.CreateReset) (int, bool)
 	AddAccountDetails(account entity.Account) error
-	GetAccountDetails(clientID int64) (entity.Account, error)
-	UpdateAccountDetails(clientID int64, account entity.Account) error
+	GetAccountDetails(accountID int64) (entity.Account, error)
+	UpdateAccountDetails(accountID int64, account entity.Account) error
 	CloseDB()
 }
 

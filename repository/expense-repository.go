@@ -8,10 +8,10 @@ import (
 )
 
 const (
-	addExpenseStatement    = `INSERT INTO expense (clientID, expenseType, expenseAmount, expenseDate) VALUES ($1,$2,$3,$4) RETURNING eid`
+	addExpenseStatement    = `INSERT INTO expense (expenseType, expenseAmount, expenseDate,clientID) VALUES ($1,$2,$3,$4) RETURNING eid`
 	getAllExpenseStatement = `SELECT * FROM expense`
 	getExpenseStatement    = `SELECT * FROM expense WHERE eid=$1`
-	updateExpenseStatement = `UPDATE expense SET clientID=$2, expenseType=$3, expenseAmount=$4,expenseDate=$5 WHERE eid=$1`
+	updateExpenseStatement = `UPDATE expense SET expenseType=$2, expenseAmount=$3,expenseDate=$4,clientID=$5 WHERE eid=$1`
 	deleteExpenseStatement = `DELETE FROM expense WHERE eid=$1`
 )
 
@@ -27,7 +27,7 @@ func (db Database) CloseDB() {
 func (db Database) AddExpense(expense entity.Expense) int64 {
 	var id int64
 
-	err := db.QueryRow(addExpenseStatement, expense.ClientID, expense.ExpenseType, expense.ExpenseAmount, expense.ExpenseDate).Scan(&id)
+	err := db.QueryRow(addExpenseStatement, expense.ExpenseType, expense.ExpenseAmount, expense.ExpenseDate, expense.ClientID).Scan(&id)
 	if err != nil {
 		log.Fatalf("Unable to execute the query. %v", err)
 	}
@@ -54,7 +54,7 @@ func (db Database) GetAllExpense() []entity.Expense {
 		var expense entity.Expense
 
 		// unmarshal the row object to user
-		err = rows.Scan(&expense.ExpenseID, &expense.ClientID, &expense.ExpenseType, &expense.ExpenseAmount, &expense.ExpenseDate)
+		err = rows.Scan(&expense.ExpenseID, &expense.ExpenseType, &expense.ExpenseAmount, &expense.ExpenseDate, &expense.ClientID)
 
 		if err != nil {
 			log.Fatalf("Unable to scan the row. %v", err)
@@ -74,7 +74,7 @@ func (db Database) GetExpense(id int64) (entity.Expense, error) {
 	row := db.QueryRow(getExpenseStatement, id)
 
 	// unmarshal the row object to user
-	err := row.Scan(&expense.ExpenseID, &expense.ClientID, &expense.ExpenseType, &expense.ExpenseAmount, &expense.ExpenseDate)
+	err := row.Scan(&expense.ExpenseID, &expense.ExpenseType, &expense.ExpenseAmount, &expense.ExpenseDate, &expense.ClientID)
 
 	if err != nil {
 		return expense, fmt.Errorf("no rows found")
@@ -84,7 +84,7 @@ func (db Database) GetExpense(id int64) (entity.Expense, error) {
 }
 
 func (db Database) UpdateExpense(id int64, expense entity.Expense) error {
-	res, err := db.Exec(updateExpenseStatement, id, expense.ClientID, expense.ExpenseType, expense.ExpenseAmount, expense.ExpenseDate)
+	res, err := db.Exec(updateExpenseStatement, id, expense.ExpenseType, expense.ExpenseAmount, expense.ExpenseDate, expense.ClientID)
 
 	if err != nil {
 		return fmt.Errorf("unable to execute the query. %v", err)

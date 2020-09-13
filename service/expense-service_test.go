@@ -9,26 +9,26 @@ import (
 
 var expense = entity.Expense{
 	ExpenseID:     1,
-	ClientID:      1,
 	ExpenseType:   "Test",
 	ExpenseAmount: 11.5,
 	ExpenseDate:   "12/12/2019",
+	ClientID:      1,
 }
 
 var expenses = []entity.Expense{
 	{
 		ExpenseID:     1,
-		ClientID:      1,
 		ExpenseType:   "Test",
 		ExpenseAmount: 11.5,
 		ExpenseDate:   "12/12/2019",
+		ClientID:      1,
 	},
 	{
 		ExpenseID:     2,
-		ClientID:      1,
 		ExpenseType:   "Test2",
 		ExpenseAmount: 12.5,
 		ExpenseDate:   "15/12/2019",
+		ClientID:      1,
 	},
 }
 

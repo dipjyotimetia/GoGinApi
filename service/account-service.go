@@ -7,8 +7,8 @@ import (
 
 type AccountService interface {
 	AddAccountDetails(account entity.Account) error
-	GetAccountDetails(clientID int64) (entity.Account, error)
-	UpdateAccountDetails(clientID int64, account entity.Account) error
+	GetAccountDetails(accountID int64) (entity.Account, error)
+	UpdateAccountDetails(accountID int64, account entity.Account) error
 }
 
 type accountService struct {
@@ -23,10 +23,10 @@ func (a accountService) AddAccountDetails(account entity.Account) error {
 	return a.accountRepository.AddAccountDetails(account)
 }
 
-func (a accountService) GetAccountDetails(clientID int64) (entity.Account, error) {
-	return a.accountRepository.GetAccountDetails(clientID)
+func (a accountService) GetAccountDetails(accountID int64) (entity.Account, error) {
+	return a.accountRepository.GetAccountDetails(accountID)
 }
 
-func (a accountService) UpdateAccountDetails(clientID int64, account entity.Account) error {
-	return a.accountRepository.UpdateAccountDetails(clientID, account)
+func (a accountService) UpdateAccountDetails(accountID int64, account entity.Account) error {
+	return a.accountRepository.UpdateAccountDetails(accountID, account)
 }
