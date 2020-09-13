@@ -13,10 +13,11 @@ type TestCase struct {
 }
 
 var account = entity.Account{
-	ClientID:     10,
+	AccountID:    1,
 	CurrencyCode: "AUD",
 	StatusCode:   "active",
 	Balance:      200,
+	ClientID:     1,
 }
 
 func TestAccountServices(t *testing.T) {
