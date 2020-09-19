@@ -8,10 +8,10 @@
   kubectl apply -f config/kubernetes/postgres-db-deployment.yaml
   kubectl apply -f config/kubernetes/postgres-db-service.yaml
 
-@echo "Wait for services to up"
+@echo "Wait for postgres db to up"
 sleep 1.5
 
-@echo "helm chart deploy"
+@echo "helm chart deploy services"
   cd config
 	helm lint
 	helm install goginapi helmchart
