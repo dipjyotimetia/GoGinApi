@@ -4,11 +4,10 @@
 
 replicaCount: 1
 
-image:
-  repository: dipjyotimetia/goginapi
-  pullPolicy: IfNotPresent
-  # Overrides the image tag whose default is the chart appVersion.
-  tag: "latest"
+repository: dipjyotimetia/goginapi
+pullPolicy: IfNotPresent
+# Overrides the image tag whose default is the chart appVersion.
+tag: "latest"
 
 imagePullSecrets: []
 nameOverride: ""

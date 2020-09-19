@@ -6,3 +6,4 @@ kubernetes-helm
 k9s
 kind
 istioctl
+skaffold
