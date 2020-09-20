@@ -1,7 +1,7 @@
 ## Go Gin Api
 
 ### Architecture
-<img src="https://github.com/dipjyotimetia/HybridTestFramewrok/blob/master/docs/architecture/goginapi.png" width="500"> 
+<img src="https://github.com/dipjyotimetia/GoGinApi/blob/master/docs/architecture/goginapi.png" width="500"> 
 
 ### To Generate Mock
 ```bash
