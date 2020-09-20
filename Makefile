@@ -96,3 +96,16 @@ kube-dash-token:
 kube-dashboard:
 	@echo "Kubernetes dashboard"
 	kubectl proxy
+
+.PHONY:helm-install
+helm-install:
+	@echo "helm chart deploy"
+	helm lint
+	helm install goginapi helmchart
+	kubectl expose deployment goginapi-helmchart --type=LoadBalancer --name=goginapi
+
+.PHONY:helm-delete
+helm-delete:
+	@echo "helm chart delete"
+	helm list
+	helm delete goginapi
