@@ -6,22 +6,31 @@
 _tests() {
     local vet="" # TODO: make it off
     local gover=$( go version | cut -f 3 -d ' ' )
+    case $gover in
+        go1.[7-9]*|go1.1[0-9]*|go2.*|devel*) true ;;
+        *) return 1
+    esac
     # note that codecgen requires fastpath, so you cannot do "codecgen notfastpath"
-    local a=( "" "safe"  "notfastpath" "notfastpath safe" "codecgen" "codecgen safe" )
+    # we test the following permutations: fastpath/unsafe, !fastpath/!unsafe, codecgen/unsafe
+    ## local a=( "" "safe"  "notfastpath safe" "codecgen" )
+    echo "TestCodecSuite: (fastpath/unsafe), (!fastpath/!unsafe), (codecgen/unsafe)"
+    local a=( "" "notfastpath safe"  "codecgen" )
+    local b=()
     for i in "${a[@]}"
     do
-        echo ">>>> TAGS: $i"
         local i2=${i:-default}
-        case $gover in
-            go1.[0-6]*) go test ${zargs[*]} -tags "$i" "$@" ;;
-            *) go vet -printfuncs "errorf" "$@" &&
-                     go test ${zargs[*]} -vet "$vet" -tags "alltests $i" -run "Suite" -coverprofile "${i2// /-}.cov.out" "$@" ;;
-        esac
-        if [[ "$?" != 0 ]]; then return 1; fi 
+        [[ "$zwait" == "1" ]] && echo ">>>> TAGS: '$i'"
+        true &&
+            go vet -printfuncs "errorf" "$@" &&
+            go test ${zargs[*]} ${ztestargs[*]} -vet "$vet" -tags "alltests $i" \
+               -run "TestCodecSuite" -coverprofile "${i2// /-}.cov.out" "$@" &
+        b+=("${i2// /-}.cov.out")
+        [[ "$zwait" == "1" ]] && wait
+        # if [[ "$?" != 0 ]]; then return 1; fi
     done
-    echo "++++++++ TEST SUITES ALL PASSED ++++++++"
+    wait
+    [[ "$zcover" == "1" ]] && command -v gocovmerge && gocovmerge "${b[@]}" > __merge.cov.out && go tool cover -html=__merge.cov.out
 }
-
 
 # is a generation needed?
 _ng() {
@@ -59,7 +68,7 @@ _build() {
     cat > gen.generated.go <<EOF
 // +build codecgen.exec
 
-// Copyright (c) 2012-2018 Ugorji Nwoke. All rights reserved.
+// Copyright (c) 2012-2020 Ugorji Nwoke. All rights reserved.
 // Use of this source code is governed by a MIT license found in the LICENSE file.
 
 package codec
@@ -86,10 +95,8 @@ EOF
 EOF
     cat > gen-from-tmpl.codec.generated.go <<EOF
 package codec 
-import "io"
-func GenInternalGoFile(r io.Reader, w io.Writer) error {
-return genInternalGoFile(r, w)
-}
+func GenRunTmpl2Go(in, out string) { genRunTmpl2Go(in, out) }
+func GenRunSortTmpl2Go(in, out string) { genRunSortTmpl2Go(in, out) }
 EOF
     cat > gen-from-tmpl.generated.go <<EOF
 //+build ignore
@@ -97,26 +104,13 @@ EOF
 package main
 
 import "${zpkg}"
-import "os"
-
-func run(fnameIn, fnameOut string) {
-println("____ " + fnameIn + " --> " + fnameOut + " ______")
-fin, err := os.Open(fnameIn)
-if err != nil { panic(err) }
-defer fin.Close()
-fout, err := os.Create(fnameOut)
-if err != nil { panic(err) }
-defer fout.Close()
-err = codec.GenInternalGoFile(fin, fout)
-if err != nil { panic(err) }
-}
 
 func main() {
-run("fast-path.go.tmpl", "fast-path.generated.go")
-run("gen-helper.go.tmpl", "gen-helper.generated.go")
-run("mammoth-test.go.tmpl", "mammoth_generated_test.go")
-run("mammoth2-test.go.tmpl", "mammoth2_generated_test.go")
-// run("sort-slice.go.tmpl", "sort-slice.generated.go")
+codec.GenRunTmpl2Go("fast-path.go.tmpl", "fast-path.generated.go")
+codec.GenRunTmpl2Go("gen-helper.go.tmpl", "gen-helper.generated.go")
+codec.GenRunTmpl2Go("mammoth-test.go.tmpl", "mammoth_generated_test.go")
+codec.GenRunTmpl2Go("mammoth2-test.go.tmpl", "mammoth2_generated_test.go")
+codec.GenRunSortTmpl2Go("sort-slice.go.tmpl", "sort-slice.generated.go")
 }
 EOF
 
@@ -124,7 +118,6 @@ EOF
         shared_test.go > bench/shared_test.go
 
     # explicitly return 0 if this passes, else return 1
-    go run -tags "prebuild" prebuild.go || return 1
     go run -tags "notfastpath safe codecgen.exec" gen-from-tmpl.generated.go || return 1
     rm -f gen-from-tmpl.*generated.go
     return 0
@@ -225,8 +218,8 @@ EOF
 _usage() {
     cat <<EOF
 primary usage: $0 
-    -[tmpfxnld]           -> [tests, make, prebuild (force) (external), inlining diagnostics, mid-stack inlining, race detector]
-    -v                    -> verbose
+    -[tosw m pf n l d]   -> [t=tests (o=cover, s=short, w=wait), m=make, p=prebuild (f=force), n=inlining diagnostics, l=mid-stack inlining, d=race detector]
+    -v                   -> v=verbose
 EOF
     if [[ "$(type -t _usage_run)" = "function" ]]; then _usage_run ; fi
 }
@@ -235,14 +228,20 @@ _main() {
     if [[ -z "$1" ]]; then _usage; return 1; fi
     local x
     local zforce
+    local zcover
+    local zwait
+    local ztestargs=()
     local zargs=()
     local zverbose=()
     local zbenchflags=""
     OPTIND=1
-    while getopts ":ctmnrgpfvlyzdb:" flag
+    while getopts ":ctmnrgpfvlyzdsowb:" flag
     do
         case "x$flag" in
+            'xo') zcover=1 ;;
+            'xw') zwait=1 ;;
             'xf') zforce=1 ;;
+            'xs') ztestargs+=("-short") ;;
             'xv') zverbose+=(1) ;;
             'xl') zargs+=("-gcflags"); zargs+=("-l=4") ;;
             'xn') zargs+=("-gcflags"); zargs+=("-m=2") ;;

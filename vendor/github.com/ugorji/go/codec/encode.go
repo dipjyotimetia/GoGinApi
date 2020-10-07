@@ -1,4 +1,4 @@
-// Copyright (c) 2012-2018 Ugorji Nwoke. All rights reserved.
+// Copyright (c) 2012-2020 Ugorji Nwoke. All rights reserved.
 // Use of this source code is governed by a MIT license found in the LICENSE file.
 
 package codec
@@ -135,6 +135,16 @@ type EncodeOptions struct {
 	// These include encoding.TextMarshaler, time.Format calls, struct field names, etc.
 	StringToRaw bool
 
+	// OptimumSize controls whether we optimize for the smallest size.
+	//
+	// Some formats will use this flag to determine whether to encode
+	// in the smallest size possible, even if it takes slightly longer.
+	//
+	// For example, some formats that support half-floats might check if it is possible
+	// to store a float64 as a half float. Doing this check has a small performance cost,
+	// but the benefit is that the encoded message will be smaller.
+	OptimumSize bool
+
 	// // AsSymbols defines what should be encoded as symbols.
 	// //
 	// // Encoding as symbols can reduce the encoded size significantly.
@@ -248,10 +258,6 @@ func (e *Encoder) kUintptr(f *codecFnInfo, rv reflect.Value) {
 	e.e.EncodeUint(uint64(rvGetUintptr(rv)))
 }
 
-func (e *Encoder) kInvalid(f *codecFnInfo, rv reflect.Value) {
-	e.e.EncodeNil()
-}
-
 func (e *Encoder) kErr(f *codecFnInfo, rv reflect.Value) {
 	e.errorf("unsupported kind %s, for %#v", rv.Kind(), rv)
 }
@@ -304,10 +310,7 @@ func (e *Encoder) kSliceWMbs(rv reflect.Value, ti *typeInfo) {
 	if l == 0 {
 		e.mapStart(0)
 	} else {
-		if l%2 == 1 {
-			e.errorf("mapBySlice requires even slice length, but got %v", l)
-			return
-		}
+		e.haltOnMbsOddLen(l)
 		e.mapStart(l / 2)
 		fn := e.kSeqFn(ti.elem)
 		for j := 0; j < l; j++ {
@@ -342,7 +345,6 @@ func (e *Encoder) kSeqWMbs(rv reflect.Value, ti *typeInfo) {
 	} else {
 		if l%2 == 1 {
 			e.errorf("mapBySlice requires even slice length, but got %v", l)
-			return
 		}
 		e.mapStart(l / 2)
 		fn := e.kSeqFn(ti.elem)
@@ -372,13 +374,8 @@ func (e *Encoder) kSeqW(rv reflect.Value, ti *typeInfo) {
 }
 
 func (e *Encoder) kChan(f *codecFnInfo, rv reflect.Value) {
-	if rvIsNil(rv) {
-		e.e.EncodeNil()
-		return
-	}
 	if f.ti.chandir&uint8(reflect.RecvDir) == 0 {
 		e.errorf("send-only channel cannot be encoded")
-		return
 	}
 	if !f.ti.mbs && uint8TypId == rt2id(f.ti.elem) {
 		e.kSliceBytesChan(rv)
@@ -395,10 +392,6 @@ func (e *Encoder) kChan(f *codecFnInfo, rv reflect.Value) {
 }
 
 func (e *Encoder) kSlice(f *codecFnInfo, rv reflect.Value) {
-	if rvIsNil(rv) {
-		e.e.EncodeNil()
-		return
-	}
 	if f.ti.mbs {
 		e.kSliceWMbs(rv, f.ti)
 	} else {
@@ -592,11 +585,6 @@ func (e *Encoder) kStruct(f *codecFnInfo, rv reflect.Value) {
 }
 
 func (e *Encoder) kMap(f *codecFnInfo, rv reflect.Value) {
-	if rvIsNil(rv) {
-		e.e.EncodeNil()
-		return
-	}
-
 	l := rv.Len()
 	e.mapStart(l)
 	if l == 0 {
@@ -915,6 +903,9 @@ func (e *Encoder) ResetBytes(out *[]byte) {
 		in = make([]byte, defEncByteBufSize)
 	}
 	e.bytes = true
+	// if e.wb == nil {
+	// 	e.wb = new(bytesEncAppender)
+	// }
 	e.wb.reset(in, out)
 	e.resetCommon()
 }
@@ -1012,24 +1003,22 @@ func (e *Encoder) Encode(v interface{}) (err error) {
 	if e.err != nil {
 		return e.err
 	}
-	if recoverPanicToErr {
-		defer func() {
-			// if error occurred during encoding, return that error;
-			// else if error occurred on end'ing (i.e. during flush), return that error.
-			err = e.w().endErr()
-			x := recover()
-			if x == nil {
-				if e.err != err {
-					e.err = err
-				}
-			} else {
-				panicValToErr(e, x, &e.err)
-				if e.err != err {
-					err = e.err
-				}
+	defer func() {
+		// if error occurred during encoding, return that error;
+		// else if error occurred on end'ing (i.e. during flush), return that error.
+		err = e.w().endErr()
+		x := recover()
+		if x == nil {
+			if e.err != err {
+				e.err = err
 			}
-		}()
-	}
+		} else {
+			panicValToErr(e, x, &e.err)
+			if e.err != err {
+				err = e.err
+			}
+		}
+	}()
 
 	// defer e.deferred(&err)
 	e.mustEncode(v)
@@ -1039,9 +1028,7 @@ func (e *Encoder) Encode(v interface{}) (err error) {
 // MustEncode is like Encode, but panics if unable to Encode.
 // This provides insight to the code location that triggered the error.
 func (e *Encoder) MustEncode(v interface{}) {
-	if e.err != nil {
-		panic(e.err)
-	}
+	halt.onerror(e.err)
 	e.mustEncode(v)
 }
 
@@ -1079,8 +1066,6 @@ func (e *Encoder) encode(iv interface{}) {
 		e.e.EncodeNil()
 		return
 	}
-
-	var vself Selfer
 
 	switch v := iv.(type) {
 	// case nil:
@@ -1122,7 +1107,7 @@ func (e *Encoder) encode(iv interface{}) {
 		e.e.EncodeFloat64(v)
 	case time.Time:
 		e.e.EncodeTime(v)
-	case []uint8:
+	case []byte:
 		e.e.EncodeStringBytesRaw(v)
 	case *Raw:
 		e.rawBytes(*v)
@@ -1158,16 +1143,25 @@ func (e *Encoder) encode(iv interface{}) {
 		e.e.EncodeFloat64(*v)
 	case *time.Time:
 		e.e.EncodeTime(*v)
-	case *[]uint8:
+	case *[]byte:
 		if *v == nil {
 			e.e.EncodeNil()
 		} else {
 			e.e.EncodeStringBytesRaw(*v)
 		}
 	default:
-		if vself, ok = iv.(Selfer); ok {
-			vself.CodecEncodeSelf(e)
-		} else if !fastpathEncodeTypeSwitch(iv, e) {
+		// var vself Selfer
+		// if xfFn := e.h.getExt(i2rtid(iv), true); xfFn != nil {
+		// 	e.e.EncodeExt(iv, xfFn.tag, xfFn.ext)
+		// } else if vself, ok = iv.(Selfer); ok {
+		// 	vself.CodecEncodeSelf(e)
+		// } else if !fastpathEncodeTypeSwitch(iv, e) {
+		// 	if !rv.IsValid() {
+		// 		rv = rv4i(iv)
+		// 	}
+		// 	e.encodeValue(rv, nil)
+		// }
+		if !fastpathEncodeTypeSwitch(iv, e) {
 			if !rv.IsValid() {
 				rv = rv4i(iv)
 			}
@@ -1176,6 +1170,10 @@ func (e *Encoder) encode(iv interface{}) {
 	}
 }
 
+// encodeValue will encode a value.
+//
+// Note that encodeValue will handle nil in the stream early, so that the
+// subsequent calls i.e. kXXX methods, etc do not have to handle it themselves.
 func (e *Encoder) encodeValue(rv reflect.Value, fn *codecFn) {
 	// if a valid fn is passed, it MUST BE for the dereferenced type of rv
 
@@ -1184,6 +1182,9 @@ func (e *Encoder) encodeValue(rv reflect.Value, fn *codecFn) {
 	//    type T struct { tHelper }
 	//    Here, for var v T; &v and &v.tHelper are the same pointer.
 	// Consequently, we need a tuple of type and pointer, which interface{} natively provides.
+
+	// MARKER: We check if value is nil here, so that the kXXX method do not have to.
+
 	var sptr interface{} // uintptr
 	var rvp reflect.Value
 	var rvpValid bool
@@ -1209,7 +1210,7 @@ TOP:
 		}
 		rv = rv.Elem()
 		goto TOP
-	case reflect.Slice, reflect.Map:
+	case reflect.Slice, reflect.Map, reflect.Chan:
 		if rvIsNil(rv) {
 			e.e.EncodeNil()
 			return
@@ -1250,9 +1251,7 @@ TOP:
 }
 
 func (e *Encoder) marshalUtf8(bs []byte, fnerr error) {
-	if fnerr != nil {
-		panic(fnerr)
-	}
+	halt.onerror(fnerr)
 	if bs == nil {
 		e.e.EncodeNil()
 	} else {
@@ -1262,9 +1261,7 @@ func (e *Encoder) marshalUtf8(bs []byte, fnerr error) {
 }
 
 func (e *Encoder) marshalAsis(bs []byte, fnerr error) {
-	if fnerr != nil {
-		panic(fnerr)
-	}
+	halt.onerror(fnerr)
 	if bs == nil {
 		e.e.EncodeNil()
 	} else {
@@ -1273,9 +1270,7 @@ func (e *Encoder) marshalAsis(bs []byte, fnerr error) {
 }
 
 func (e *Encoder) marshalRaw(bs []byte, fnerr error) {
-	if fnerr != nil {
-		panic(fnerr)
-	}
+	halt.onerror(fnerr)
 	if bs == nil {
 		e.e.EncodeNil()
 	} else {
@@ -1291,7 +1286,7 @@ func (e *Encoder) rawBytes(vv Raw) {
 	e.encWr.writeb(v) // e.asis(v)
 }
 
-func (e *Encoder) wrapErr(v interface{}, err *error) {
+func (e *Encoder) wrapErr(v error, err *error) {
 	*err = encodeError{codecError{name: e.hh.Name(), err: v}}
 }
 
@@ -1344,6 +1339,12 @@ func (e *Encoder) arrayEnd() {
 
 // ----------
 
+func (e *Encoder) haltOnMbsOddLen(length int) {
+	if length%2 == 1 {
+		e.errorf("mapBySlice requires even slice length, but got %v", length)
+	}
+}
+
 func (e *Encoder) sideEncode(v interface{}, bs *[]byte) {
 	rv := baseRV(v)
 	e2 := NewEncoderBytes(bs, e.hh)
@@ -1354,7 +1355,6 @@ func (e *Encoder) sideEncode(v interface{}, bs *[]byte) {
 
 func encStructFieldKey(encName string, ee encDriver, w *encWr,
 	keyType valueType, encNameAsciiAlphaNum bool, js bool) {
-	var m must
 	// use if-else-if, not switch (which compiles to binary-search)
 	// since keyType is typically valueTypeString, branch prediction is pretty good.
 	if keyType == valueTypeString {
@@ -1364,10 +1364,10 @@ func encStructFieldKey(encName string, ee encDriver, w *encWr,
 			ee.EncodeString(encName)
 		}
 	} else if keyType == valueTypeInt {
-		ee.EncodeInt(m.Int(strconv.ParseInt(encName, 10, 64)))
+		ee.EncodeInt(must.Int(strconv.ParseInt(encName, 10, 64)))
 	} else if keyType == valueTypeUint {
-		ee.EncodeUint(m.Uint(strconv.ParseUint(encName, 10, 64)))
+		ee.EncodeUint(must.Uint(strconv.ParseUint(encName, 10, 64)))
 	} else if keyType == valueTypeFloat {
-		ee.EncodeFloat64(m.Float(strconv.ParseFloat(encName, 64)))
+		ee.EncodeFloat64(must.Float(strconv.ParseFloat(encName, 64)))
 	}
 }
