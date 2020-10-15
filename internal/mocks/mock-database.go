@@ -1,7 +1,7 @@
 package mocks
 
 import (
-	"github.com/GoGinApi/v2/entity"
+	"github.com/GoGinApi/v2/internal/entity"
 	"github.com/stretchr/testify/mock"
 )
 

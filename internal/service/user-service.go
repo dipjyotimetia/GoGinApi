@@ -1,8 +1,8 @@
 package service
 
 import (
-	"github.com/GoGinApi/v2/entity"
-	"github.com/GoGinApi/v2/repository"
+	"github.com/GoGinApi/v2/internal/entity"
+	"github.com/GoGinApi/v2/internal/repository"
 )
 
 type UserService interface {

@@ -1,4 +1,4 @@
-// Copyright (c) 2012-2020 Ugorji Nwoke. All rights reserved.
+// Copyright (c) 2012-2018 Ugorji Nwoke. All rights reserved.
 // Use of this source code is governed by a MIT license found in the LICENSE file.
 
 package codec
@@ -10,11 +10,7 @@ import (
 	"net/rpc"
 )
 
-var (
-	errRpcJsonNeedsTermWhitespace = errors.New("rpc - requires JsonHandle with TermWhitespace=true")
-	errRpcIsClosed                = errors.New("rpc - connection has been closed")
-	errRpcNoConn                  = errors.New("rpc - no connection")
-)
+var errRpcJsonNeedsTermWhitespace = errors.New("rpc requires JsonHandle with TermWhitespace=true")
 
 // Rpc provides a rpc Server or Client Codec for rpc communication.
 type Rpc interface {
@@ -55,14 +51,14 @@ func newRPCCodec(conn io.ReadWriteCloser, h Handle) rpcCodec {
 
 func newRPCCodec2(r io.Reader, w io.Writer, c io.Closer, h Handle) rpcCodec {
 	// defensive: ensure that jsonH has TermWhitespace turned on.
-	jsonH, ok := h.(*JsonHandle)
-	if ok && !jsonH.TermWhitespace {
-		halt.onerror(errRpcJsonNeedsTermWhitespace)
+	if jsonH, ok := h.(*JsonHandle); ok && !jsonH.TermWhitespace {
+		panic(errRpcJsonNeedsTermWhitespace)
 	}
-	var f ioFlusher
+	// always ensure that we use a flusher, and always flush what was written to the connection.
+	// we lose nothing by using a buffered writer internally.
+	f, ok := w.(ioFlusher)
 	bh := basicHandle(h)
 	if !bh.RPCNoBuffer {
-		f, ok = w.(ioFlusher)
 		if bh.WriterBufferSize <= 0 {
 			if !ok {
 				bw := bufio.NewWriter(w)
@@ -70,8 +66,11 @@ func newRPCCodec2(r io.Reader, w io.Writer, c io.Closer, h Handle) rpcCodec {
 			}
 		}
 		if bh.ReaderBufferSize <= 0 {
-			if _, ok = w.(ioBuffered); !ok {
-				r = bufio.NewReader(r)
+			if _, ok = w.(ioPeeker); !ok {
+				if _, ok = w.(ioBuffered); !ok {
+					br := bufio.NewReader(r)
+					r = br
+				}
 			}
 		}
 	}
@@ -87,62 +86,62 @@ func newRPCCodec2(r io.Reader, w io.Writer, c io.Closer, h Handle) rpcCodec {
 }
 
 func (c *rpcCodec) write(obj1, obj2 interface{}, writeObj2 bool) (err error) {
-	if err = c.ready(); err != nil {
-		return
+	if c.c != nil {
+		cls := c.cls.load()
+		if cls.closed {
+			return cls.errClosed
+		}
 	}
 	err = c.enc.Encode(obj1)
-	if err == nil && writeObj2 {
-		err = c.enc.Encode(obj2)
+	if err == nil {
+		if writeObj2 {
+			err = c.enc.Encode(obj2)
+		}
 	}
 	if c.f != nil {
-		if err2 := c.f.Flush(); err == nil {
-			// ignore flush error if prior error occurred during Encode
-			err = err2
+		if err == nil {
+			err = c.f.Flush()
+		} else {
+			_ = c.f.Flush() // swallow flush error, so we maintain prior error on write
 		}
 	}
 	return
 }
 
+func (c *rpcCodec) swallow(err *error) {
+	defer panicToErr(c.dec, err)
+	c.dec.swallow()
+}
+
 func (c *rpcCodec) read(obj interface{}) (err error) {
-	if err = c.ready(); err != nil {
-		return
+	if c.c != nil {
+		cls := c.cls.load()
+		if cls.closed {
+			return cls.errClosed
+		}
 	}
 	//If nil is passed in, we should read and discard
 	if obj == nil {
 		// var obj2 interface{}
 		// return c.dec.Decode(&obj2)
-		defer panicToErr(c.dec, &err)
-		c.dec.swallow()
+		c.swallow(&err)
 		return
 	}
 	return c.dec.Decode(obj)
 }
 
-func (c *rpcCodec) Close() (err error) {
-	if c.c != nil {
-		cls := c.cls.load()
-		if !cls.closed {
-			cls.errClosed = c.c.Close()
-			cls.closed = true
-			c.cls.store(cls)
-		}
-		err = cls.errClosed
-	}
-	return
-}
-
-func (c *rpcCodec) ready() (err error) {
+func (c *rpcCodec) Close() error {
 	if c.c == nil {
-		err = errRpcNoConn
-	} else {
-		cls := c.cls.load()
-		if cls.closed {
-			if err = cls.errClosed; err == nil {
-				err = errRpcIsClosed
-			}
-		}
+		return nil
 	}
-	return
+	cls := c.cls.load()
+	if cls.closed {
+		return cls.errClosed
+	}
+	cls.errClosed = c.c.Close()
+	cls.closed = true
+	c.cls.store(cls)
+	return cls.errClosed
 }
 
 func (c *rpcCodec) ReadResponseBody(body interface{}) error {

@@ -7,6 +7,6 @@ deploy:
   helm:
     releases:
     - name: gogin-api
-      chartPath: config/helmchart
+      chartPath: deployments/helmchart
       artifactOverrides:
         image: gogin-api

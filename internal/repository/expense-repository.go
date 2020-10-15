@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/GoGinApi/v2/entity"
+	"github.com/GoGinApi/v2/internal/entity"
 )
 
 const (

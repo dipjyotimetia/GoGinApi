@@ -1,8 +1,8 @@
 package controller
 
 import (
-	"github.com/GoGinApi/v2/entity"
-	"github.com/GoGinApi/v2/service"
+	"github.com/GoGinApi/v2/internal/entity"
+	"github.com/GoGinApi/v2/internal/service"
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
 	"strconv"

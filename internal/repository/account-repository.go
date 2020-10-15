@@ -3,7 +3,7 @@ package repository
 import (
 	"database/sql"
 	"fmt"
-	"github.com/GoGinApi/v2/entity"
+	"github.com/GoGinApi/v2/internal/entity"
 	"log"
 )
 

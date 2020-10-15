@@ -1,6 +1,7 @@
 #!/bin/bash
 @echo "Clean Deploy"
-  cd config
+  cd ..
+  cd deployments
   helm delete goginapi
   kubectl delete deployments --all
   kubectl delete services --all

@@ -6,10 +6,10 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/GoGinApi/v2/entity"
-	"github.com/GoGinApi/v2/errors"
+	"github.com/GoGinApi/v2/internal/entity"
+	"github.com/GoGinApi/v2/internal/errors"
+	"github.com/GoGinApi/v2/internal/service"
 	"github.com/GoGinApi/v2/pkg/utils"
-	"github.com/GoGinApi/v2/service"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"

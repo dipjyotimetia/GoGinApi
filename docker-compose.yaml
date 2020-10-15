@@ -23,7 +23,7 @@ services:
       POSTGRES_PASSWORD: goland
       POSTGRES_DB: goland
     volumes:
-      - ./config/db/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./deployments/db/init.sql:/docker-entrypoint-initdb.d/init.sql
       - postgresql:/var/lib/postgresql
     networks:
       - overlay

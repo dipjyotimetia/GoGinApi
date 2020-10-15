@@ -4,7 +4,7 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
-	"github.com/GoGinApi/v2/entity"
+	"github.com/GoGinApi/v2/internal/entity"
 	"github.com/GoGinApi/v2/pkg/utils"
 	"log"
 )

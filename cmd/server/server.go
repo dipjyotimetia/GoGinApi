@@ -8,10 +8,10 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/GoGinApi/v2/controller"
-	"github.com/GoGinApi/v2/middleware"
-	"github.com/GoGinApi/v2/repository"
-	"github.com/GoGinApi/v2/service"
+	"github.com/GoGinApi/v2/internal/controller"
+	"github.com/GoGinApi/v2/internal/middleware"
+	"github.com/GoGinApi/v2/internal/repository"
+	"github.com/GoGinApi/v2/internal/service"
 	"github.com/gin-gonic/gin"
 )
 
@@ -39,8 +39,8 @@ func main() {
 	_ = server.Run(":8082")
 }
 
-//SetSetupRouter initializing server
-//nolint:funlen
+// SetSetupRouter initializing server
+// nolint:funlen
 func setupRouter() *gin.Engine {
 	// defer userRepository.CloseDB()
 
