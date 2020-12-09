@@ -3,10 +3,12 @@ github.com/davecgh/go-spew/spew
 # github.com/dgrijalva/jwt-go v3.2.0+incompatible
 ## explicit
 github.com/dgrijalva/jwt-go
-# github.com/getsentry/sentry-go v0.7.0
+# github.com/getsentry/sentry-go v0.9.0
 ## explicit
 github.com/getsentry/sentry-go
 github.com/getsentry/sentry-go/gin
+github.com/getsentry/sentry-go/internal/crypto/randutil
+github.com/getsentry/sentry-go/internal/debug
 # github.com/gin-contrib/sse v0.1.0
 github.com/gin-contrib/sse
 # github.com/gin-gonic/gin v1.6.3
@@ -21,7 +23,7 @@ github.com/go-playground/locales
 github.com/go-playground/locales/currency
 # github.com/go-playground/universal-translator v0.17.0
 github.com/go-playground/universal-translator
-# github.com/go-playground/validator/v10 v10.4.0
+# github.com/go-playground/validator/v10 v10.4.1
 ## explicit
 github.com/go-playground/validator/v10
 # github.com/golang/protobuf v1.3.3
@@ -30,7 +32,7 @@ github.com/golang/protobuf/proto
 github.com/json-iterator/go
 # github.com/leodido/go-urn v1.2.0
 github.com/leodido/go-urn
-# github.com/lib/pq v1.8.0
+# github.com/lib/pq v1.9.0
 ## explicit
 github.com/lib/pq
 github.com/lib/pq/oid
@@ -54,16 +56,14 @@ github.com/stretchr/testify/mock
 # github.com/twinj/uuid v1.0.0
 ## explicit
 github.com/twinj/uuid
-# github.com/ugorji/go v1.1.10
-## explicit
-# github.com/ugorji/go/codec v1.1.10
+# github.com/ugorji/go/codec v1.1.7
 github.com/ugorji/go/codec
-# golang.org/x/crypto v0.0.0-20201002170205-7f63de1d35b0
+# golang.org/x/crypto v0.0.0-20201203163018-be400aefbc4c
 ## explicit
 golang.org/x/crypto/bcrypt
 golang.org/x/crypto/blowfish
 golang.org/x/crypto/sha3
-# golang.org/x/sys v0.0.0-20201005065044-765f4ea38db3
+# golang.org/x/sys v0.0.0-20201207223542-d4d67f95c62d
 ## explicit
 golang.org/x/sys/cpu
 golang.org/x/sys/internal/unsafeheader
@@ -72,6 +72,5 @@ golang.org/x/sys/unix
 ## explicit
 # gopkg.in/yaml.v2 v2.2.8
 gopkg.in/yaml.v2
-# gopkg.in/yaml.v3 v3.0.0-20200615113413-eeeca48fe776
-## explicit
+# gopkg.in/yaml.v3 v3.0.0-20200313102051-9f266ea9e77c
 gopkg.in/yaml.v3

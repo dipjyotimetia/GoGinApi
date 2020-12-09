@@ -2,7 +2,7 @@ package utils
 
 import (
 	"encoding/base64"
-	"github.com/GoGinApi/v2/entity"
+	"github.com/GoGinApi/v2/internal/entity"
 	"net/url"
 	"regexp"
 )

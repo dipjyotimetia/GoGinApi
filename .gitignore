@@ -1,3 +1,5 @@
-/.idea/
+/.idea/**
 /gin.log
 /GoGinApi.iml
+/.vscode/**
+/bin/**

@@ -1,4 +1,4 @@
-apiVersion: skaffold/v2beta7
+apiVersion: skaffold/v2beta8
 kind: Config
 build:
   artifacts:
@@ -7,6 +7,6 @@ deploy:
   helm:
     releases:
     - name: gogin-api
-      chartPath: config/helmchart
+      chartPath: deployments/helmchart
       artifactOverrides:
         image: gogin-api
