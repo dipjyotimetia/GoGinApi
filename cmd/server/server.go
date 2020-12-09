@@ -40,10 +40,8 @@ func main() {
 }
 
 // SetSetupRouter initializing server
-// nolint:funlen
 func setupRouter() *gin.Engine {
 	// defer userRepository.CloseDB()
-
 	setupLogOutput()
 
 	if err := sentry.Init(sentry.ClientOptions{
