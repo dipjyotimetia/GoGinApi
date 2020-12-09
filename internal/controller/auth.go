@@ -11,7 +11,7 @@ import (
 func AuthMiddleware(ctx *gin.Context, jwtKey []byte) (jwt.MapClaims, bool) {
 	// obtain session token from the requests cookies
 	ck, err := ctx.Request.Cookie("token")
-	fmt.Println(ck, "coookie")
+	fmt.Println(ck, "cookie")
 	if err != nil {
 		fmt.Print(err)
 		return nil, false
