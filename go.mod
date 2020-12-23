@@ -11,7 +11,8 @@ require (
 	github.com/myesui/uuid v1.0.0 // indirect
 	github.com/stretchr/testify v1.6.1
 	github.com/twinj/uuid v1.0.0
-	golang.org/x/crypto v0.0.0-20201203163018-be400aefbc4c
-	golang.org/x/sys v0.0.0-20201207223542-d4d67f95c62d // indirect
+	golang.org/x/crypto v0.0.0-20201221181555-eec23a3978ad
+	golang.org/x/sys v0.0.0-20201221093633-bc327ba9c2f0 // indirect
+	google.golang.org/protobuf v1.25.0 // indirect
 	gopkg.in/stretchr/testify.v1 v1.2.2 // indirect
 )
