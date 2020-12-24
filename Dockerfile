@@ -1,4 +1,4 @@
-FROM golang:1.14-alpine
+FROM golang:1.15-alpine
 
 RUN apk add --no-cache git
 
@@ -26,7 +26,7 @@ COPY . .
 RUN go build -o ./bin/GoGinApi ./cmd/server
 
 
-# This container exposes port 8080 to the outside world
+# This container exposes port 8082 to the outside world
 EXPOSE 8082
 
 # Run the binary program produced by `go install`
