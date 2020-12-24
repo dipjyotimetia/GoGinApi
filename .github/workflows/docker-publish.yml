@@ -64,7 +64,7 @@ jobs:
           fi
 
   DockerPublish:
-    needs: test
+    needs: integrationtest
     name: DockerPublish
     runs-on: ubuntu-latest
     steps:
@@ -99,7 +99,7 @@ jobs:
   # See also https://docs.docker.com/docker-hub/builds/
   GithubPublish:
     # Ensure test job passes before pushing image.
-    needs: test
+    needs: integrationtest
 
     runs-on: ubuntu-latest
     if: github.event_name == 'push'
