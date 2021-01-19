@@ -34,6 +34,6 @@
 - name: "enhancement"
   color: "a22eef"
 - name: "wontfix_it"
-  color: "000000"
+  color: "08A6C5"
   description: "This will not be worked on"
   from_name: "wontfix"
