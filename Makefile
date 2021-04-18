@@ -40,6 +40,26 @@ update:
 	@echo "Updating..."
 	go get -t -u ./...
 
+.PHONY:skaffold-run
+skaffold-run:
+	@echo "Skaffold run"
+	skaffold run
+
+.PHONY:skaffold-delete
+skaffold-delete:
+	@echo "Skaffold run"
+	skaffold delete
+
+.PHONY:kustomize-up
+kustomize-up:
+	@echo "Kustomize"
+	kubectl apply -k deployments\kubernetes\
+
+.PHONY:kustomize-down
+kustomize-down:
+	@echo "Kustomize"
+	kubectl delete -k deployments\kubernetes\
+
 .PHONY:kube-up
 kube-up:
 	@echo "Kubernetes up"
