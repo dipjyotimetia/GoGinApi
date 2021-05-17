@@ -1,0 +1,12 @@
+resources:
+  - postgres-secret.yaml
+  - postgres-configmap.yaml
+  - postgres-db-pv.yaml
+  - postgres-db-pvc.yaml
+  - postgres-db-deployment.yaml
+  - postgres-db-service.yaml
+  - app-postgres-deployment.yaml
+  - app-postgres-service.yaml
+
+commonLabels:
+  owner: dip
