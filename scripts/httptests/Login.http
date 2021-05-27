@@ -1,0 +1,39 @@
+POST {{host}}/api/register
+Content-Type: application/json
+
+{
+  "name":"test1",
+  "password":"password1",
+  "email":"test1@gmail.com"
+}
+
+###
+
+POST {{host}}/api/login
+Content-Type: application/json
+
+{
+  "email":"test1@gmail.com",
+  "password":"password1"
+}
+
+###
+
+GET {{host}}/api/session
+
+###
+
+POST {{host}}/api/createReset
+Content-Type: application/json
+
+{
+  "email":"test1@gmail.com"
+}
+
+###
+
+POST {{host}}/api/logout
+
+###
+
+
