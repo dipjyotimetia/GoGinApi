@@ -36,3 +36,6 @@ volumes:
 networks:
   overlay:
     driver: bridge
+#localhost test enable
+  localhost:
+    network_mode: host
