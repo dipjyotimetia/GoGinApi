@@ -8,7 +8,7 @@ import (
 func SetupNewRelic() (*newrelic.Application, error) {
 	app, err := newrelic.NewApplication(
 		newrelic.ConfigAppName("GoGinApi"),
-		newrelic.ConfigLicense("eu01xxf5377b1860a6a52f52c9c20c86adadNRAL"),
+		newrelic.ConfigLicense(""), // Enable with apikey
 		newrelic.ConfigDistributedTracerEnabled(true),
 	)
 	if err != nil {

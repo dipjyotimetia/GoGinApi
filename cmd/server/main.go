@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"github.com/GoGinApi/v2/pkg/utils"
-	"github.com/newrelic/go-agent/v3/integrations/nrgin"
 	"io"
 	"net/http"
 	"os"
@@ -44,7 +43,7 @@ func main() {
 func setupRouter() *gin.Engine {
 	// defer userRepository.CloseDB()
 	setupLogOutput()
-	apm, err := utils.SetupNewRelic()
+	_, err := utils.SetupNewRelic()
 	if err != nil {
 		fmt.Printf("newrelic error")
 		os.Exit(1)
@@ -52,7 +51,7 @@ func setupRouter() *gin.Engine {
 
 	server := gin.New()
 	server.Use(gin.Recovery(), middleware.Logger())
-	server.Use(nrgin.Middleware(apm))
+	// server.Use(nrgin.Middleware(apm)) // Enable with api key
 	server.Use(middleware.Cors())
 	server.Use(middleware.RequestIDMiddleware())
 
