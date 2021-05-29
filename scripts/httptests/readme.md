@@ -1,0 +1,1 @@
+`IntelliJ Rest client or VSCode Rest Client can be used to trigger the requests  `

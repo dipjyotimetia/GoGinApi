@@ -1,0 +1,33 @@
+#Add Account Details
+POST {{host}}/api/v1/addAccountDetails
+Content-Type: application/json
+Cookie: {{my_cookie}}
+
+{
+  "CurrencyCode": "AUD",
+  "StatusCode": "100",
+  "Balance": 200,
+  "ClientID": 1
+}
+
+###
+
+#Get Account details
+GET {{host}}/api/v1/getAccountDetails/1
+Cookie: {{my_cookie}}
+
+###
+
+#Update account details
+PUT {{host}}/api/v1/updateAccountDetails/1
+Content-Type: application/json
+Cookie: {{my_cookie}}
+
+{
+  "CurrencyCode": "AUD",
+  "StatusCode": "100",
+  "Balance": 600,
+  "ClientID": 1
+}
+
+###

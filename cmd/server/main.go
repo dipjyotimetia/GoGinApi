@@ -1,9 +1,6 @@
 package main
 
 import (
-	"fmt"
-	"github.com/getsentry/sentry-go"
-	sentrygin "github.com/getsentry/sentry-go/gin"
 	"io"
 	"net/http"
 	"os"
@@ -40,23 +37,21 @@ func main() {
 }
 
 // SetSetupRouter initializing server
+//nolint:funlen
 func setupRouter() *gin.Engine {
 	// defer userRepository.CloseDB()
 	setupLogOutput()
-
-	if err := sentry.Init(sentry.ClientOptions{
-		Dsn: "https://fac4a89b78d54828bc66d11a5ad4a4f3@o263555.ingest.sentry.io/5452934",
-	}); err != nil {
-		fmt.Printf("Sentry initialization failed: %v\n", err)
-	}
+	//_, err := utils.SetupNewRelic()
+	//if err != nil {
+	//	fmt.Printf("newrelic error")
+	//	os.Exit(1)
+	//}
 
 	server := gin.New()
 	server.Use(gin.Recovery(), middleware.Logger())
+	// server.Use(nrgin.Middleware(apm)) // Enable with api key
 	server.Use(middleware.Cors())
 	server.Use(middleware.RequestIDMiddleware())
-	server.Use(sentrygin.New(sentrygin.Options{
-		Repanic: true,
-	}))
 
 	server.GET("/", func(ctx *gin.Context) {
 		ctx.JSON(http.StatusOK, gin.H{
