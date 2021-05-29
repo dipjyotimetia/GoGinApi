@@ -12,14 +12,11 @@ jobs:
             -d --restart unless-stopped \
             --name newrelic-statsd \
             -h $(hostname) \
-            -e NR_ACCOUNT_ID=$NR_ACCOUNTID \
-            -e NR_API_KEY=$NR_APIKEY \
+            -e NR_ACCOUNT_ID=${{secrets.NR_ACCOUNTID}} \
+            -e NR_API_KEY=${{secrets.NR_APIKEY}} \
             -e NR_EU_REGION=true \
             -p 8125:8125/udp \
             newrelic/nri-statsd:latest
-        env:
-          NR_ACCOUNTID: {{secrets.NR_ACCOUNTID}}
-          NR_APIKEY: {{secrets.NR_APIKEY}}
       - name: Docker compose
         run: docker-compose up -d
       - name: Download and Installing K6 ...
