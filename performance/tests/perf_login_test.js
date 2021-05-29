@@ -10,7 +10,7 @@ export let options = {
 }
 
 export default function() {
-var url = 'http://localhost:8082/api/login';
+var url = 'http://172.17.0.1:8082/api/login';
   var payload = JSON.stringify(
   {
     "email": "test1@gmail.com",
