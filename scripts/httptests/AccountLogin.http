@@ -1,0 +1,47 @@
+#Register user
+POST {{host}}/api/register
+Content-Type: application/json
+
+{
+  "name": "test2",
+  "password": "password1",
+  "email": "test2@gmail.com"
+}
+
+###
+
+#Login user
+POST {{host}}/api/login
+Content-Type: application/json
+
+{
+  "email": "test1@gmail.com",
+  "password": "password1"
+}
+
+> {%
+    client.global.set("my_cookie", response.headers.valuesOf("Set-Cookie")[0]);
+%}
+
+###
+
+GET {{host}}/api/session
+Cookie: {{my_cookie}}
+###
+
+POST {{host}}/api/createReset
+Content-Type: application/json
+Cookie: {{my_cookie}}
+
+{
+  "email": "test1@gmail.com"
+}
+
+###
+
+POST {{host}}/api/logout
+Cookie: {{my_cookie}}
+
+###
+
+

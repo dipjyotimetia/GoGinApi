@@ -1,0 +1,38 @@
+#Add Expense details
+POST {{host}}/api/v1/addExpense
+Content-Type: application/json
+Cookie: {{my_cookie}}
+
+{
+  "expenseType":"test2",
+  "expenseAmount":16.34,
+  "expenseDate":"12/07/2019",
+  "clientID":1
+}
+
+###
+
+#GetExpenseDetails
+GET {{host}}/api/v1/getExpense
+Cookie: {{my_cookie}}
+###
+
+#UpdateExpenseDetails
+PUT {{host}}/api/v1/updateExpense/2
+Content-Type: application/json
+Cookie: {{my_cookie}}
+
+{
+  "expenseType":"test2",
+  "expenseAmount":19.34,
+  "expenseDate":"12/09/2019",
+  "clientID":1
+}
+
+###
+
+#DeleteExpenseDetails
+DELETE {{host}}/api/v1/deleteExpense/1
+Cookie: {{my_cookie}}
+
+###

@@ -98,7 +98,6 @@ func (uc *userController) Login(ctx *gin.Context) error {
 
 	// Create the JWT claims, which includes the User struct and expiry time
 	claims := &Claims{
-
 		User: entity.User{
 			Name: name, Email: email, CreatedAt: createdAt, UpdatedAt: updatedAt,
 		},
