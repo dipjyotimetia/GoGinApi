@@ -24,9 +24,14 @@ services:
     volumes:
       - ./deployments/db/init.sql:/docker-entrypoint-initdb.d/init.sql
       - postgresql:/var/lib/postgresql
+    networks:
+      - overlay
     ports:
       - 5432:5432
-    network_mode: host
 
 volumes:
   postgresql:
+
+networks:
+  overlay:
+    driver: bridge
