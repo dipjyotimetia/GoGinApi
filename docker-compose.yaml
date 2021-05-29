@@ -14,6 +14,7 @@ services:
     environment:
       WAIT_HOSTS: postgres:5432
     restart: on-failure
+    network_mode: host
 
   fullstack-postgres:
     restart: always
@@ -29,6 +30,7 @@ services:
       - overlay
     ports:
       - 5432:5432
+    network_mode: host
 
 volumes:
   postgresql:
@@ -36,6 +38,3 @@ volumes:
 networks:
   overlay:
     driver: bridge
-#localhost test enable
-  localhost:
-    network_mode: host
