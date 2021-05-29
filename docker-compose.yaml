@@ -5,8 +5,6 @@ services:
     build:
       context: . # Use an image built from the specified dockerfile in the current directory.
       dockerfile: Dockerfile
-    networks:
-      - overlay
     ports:
       - 8082:8082
     depends_on:
@@ -26,15 +24,9 @@ services:
     volumes:
       - ./deployments/db/init.sql:/docker-entrypoint-initdb.d/init.sql
       - postgresql:/var/lib/postgresql
-    networks:
-      - overlay
     ports:
       - 5432:5432
     network_mode: host
 
 volumes:
   postgresql:
-
-networks:
-  overlay:
-    driver: bridge
