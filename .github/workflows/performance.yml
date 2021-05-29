@@ -6,7 +6,7 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v1
-      - name: Install newrelic agent
+      - name: Setup NewRelic Agent
         run: |
           docker run \
             -d --restart unless-stopped \
@@ -17,10 +17,10 @@ jobs:
             -e NR_EU_REGION=true \
             -p 8125:8125/udp \
             newrelic/nri-statsd:latest
-      - name: Docker compose
+      - name: Docker compose application
         run: docker-compose up -d
       - name: Download and Installing K6 ...
         run: |
           curl https://github.com/k6io/k6/releases/download/v0.32.0/k6-v0.32.0-linux-amd64.tar.gz -L | tar xvz --strip-components 1
-      - name: Run cloud performance test
+      - name: Run Performance test
         run: K6_STATSD_ENABLE_TAGS=true ./k6 run --out statsd performance/tests/perf_login_test.js
