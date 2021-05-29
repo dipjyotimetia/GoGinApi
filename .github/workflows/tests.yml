@@ -61,7 +61,7 @@ jobs:
           output: reports
           type: go,bash
       - name: Upload scan reports
-        uses: actions/upload-artifact@v2.2.2
+        uses: actions/upload-artifact@v2.2.3
         with:
           name: sast-scan-reports
           path: reports
