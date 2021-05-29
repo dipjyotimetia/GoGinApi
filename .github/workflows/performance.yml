@@ -18,8 +18,8 @@ jobs:
             -p 8125:8125/udp \
             newrelic/nri-statsd:latest
         env:
-          NR_ACCOUNTID: {{secret.NR_ACCOUNTID}}
-          NR_APIKEY: {{secret.NR_APIKEY}}
+          NR_ACCOUNTID: {{secrets.NR_ACCOUNTID}}
+          NR_APIKEY: {{secrets.NR_APIKEY}}
       - name: Docker compose
         run: docker-compose up -d
       - name: Download and Installing K6 ...
