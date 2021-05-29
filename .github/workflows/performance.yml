@@ -3,6 +3,9 @@ on: [push]
 jobs:
   Performance_test:
     runs-on: ubuntu-latest
+    env:
+      NR_ACCOUNTID: ${{secrets.NR_ACCOUNTID}}
+      NR_APIKEY: ${{secrets.NR_APIKEY}}
     steps:
       - name: Checkout
         uses: actions/checkout@v1
@@ -19,9 +22,6 @@ jobs:
             -e TAGS="k6Test:PerformanceTest" \
             -p 8125:8125/udp \
             newrelic/nri-statsd:latest
-        env:
-          NR_ACCOUNTID: ${{secrets.NR_ACCOUNTID}}
-          NR_APIKEY: ${{secrets.NR_APIKEY}}
       - name: Docker compose application
         run: docker-compose up -d
       - name: Download and Installing K6_v32 ...
