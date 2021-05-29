@@ -26,5 +26,5 @@ jobs:
           curl https://github.com/k6io/k6/releases/download/v0.32.0/k6-v0.32.0-linux-amd64.tar.gz -L | tar xvz --strip-components 1
       - name: Run Performance test
         run: K6_STATSD_ENABLE_TAGS=true ./k6 run --out statsd performance/tests/perf_login_test.js
-        env:
+        with:
           NR_APIKEY: {{secrets.NR_APIKEY}}
