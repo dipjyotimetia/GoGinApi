@@ -1,8 +1,6 @@
 package main
 
 import (
-	"fmt"
-	"github.com/GoGinApi/v2/pkg/utils"
 	"io"
 	"net/http"
 	"os"
@@ -43,11 +41,11 @@ func main() {
 func setupRouter() *gin.Engine {
 	// defer userRepository.CloseDB()
 	setupLogOutput()
-	_, err := utils.SetupNewRelic()
-	if err != nil {
-		fmt.Printf("newrelic error")
-		os.Exit(1)
-	}
+	//_, err := utils.SetupNewRelic()
+	//if err != nil {
+	//	fmt.Printf("newrelic error")
+	//	os.Exit(1)
+	//}
 
 	server := gin.New()
 	server.Use(gin.Recovery(), middleware.Logger())
