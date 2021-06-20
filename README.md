@@ -18,3 +18,5 @@ make compose | docker-compose up -d
 deploy.sh
 cleandeploy.sh
 ```
+
+https://timothyagustian.medium.com/simulating-customized-chaos-in-golang-using-toxiproxy-b913584d88a7
