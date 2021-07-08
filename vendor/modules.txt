@@ -17,7 +17,7 @@ github.com/go-playground/locales
 github.com/go-playground/locales/currency
 # github.com/go-playground/universal-translator v0.17.0
 github.com/go-playground/universal-translator
-# github.com/go-playground/validator/v10 v10.6.1
+# github.com/go-playground/validator/v10 v10.7.0
 ## explicit
 github.com/go-playground/validator/v10
 # github.com/golang/mock v1.5.0
@@ -41,8 +41,10 @@ github.com/lib/pq/scram
 # github.com/mattn/go-isatty v0.0.12
 github.com/mattn/go-isatty
 # github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd
+## explicit
 github.com/modern-go/concurrent
 # github.com/modern-go/reflect2 v1.0.1
+## explicit
 github.com/modern-go/reflect2
 # github.com/newrelic/go-agent/v3 v3.12.0
 ## explicit
@@ -54,9 +56,6 @@ github.com/newrelic/go-agent/v3/internal/logger
 github.com/newrelic/go-agent/v3/internal/sysinfo
 github.com/newrelic/go-agent/v3/internal/utilization
 github.com/newrelic/go-agent/v3/newrelic
-# github.com/newrelic/go-agent/v3/integrations/nrgin v1.1.0
-## explicit
-github.com/newrelic/go-agent/v3/integrations/nrgin
 # github.com/pmezard/go-difflib v1.0.0
 github.com/pmezard/go-difflib/difflib
 # github.com/stretchr/objx v0.1.0
