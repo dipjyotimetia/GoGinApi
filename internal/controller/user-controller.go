@@ -10,9 +10,9 @@ import (
 	"github.com/GoGinApi/v2/internal/errors"
 	"github.com/GoGinApi/v2/internal/service"
 	"github.com/GoGinApi/v2/pkg/utils"
-	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
+	"github.com/golang-jwt/jwt/v4"
 )
 
 var jwtKey = []byte("secret")
