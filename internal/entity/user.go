@@ -1,8 +1,9 @@
 package entity
 
 import (
-	"golang.org/x/crypto/bcrypt"
 	"log"
+
+	"golang.org/x/crypto/bcrypt"
 )
 
 // Register struct
