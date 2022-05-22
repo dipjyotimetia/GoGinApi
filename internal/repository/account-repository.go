@@ -2,9 +2,11 @@ package repository
 
 import (
 	"database/sql"
+	"errors"
 	"fmt"
-	"github.com/GoGinApi/v2/internal/entity"
 	"log"
+
+	"github.com/GoGinApi/v2/internal/entity"
 )
 
 const (
@@ -28,7 +30,7 @@ func (db *Database) GetAccountDetails(clientID int64) (entity.Account, error) {
 	row := db.QueryRow(getAccountDetailsStatement, clientID)
 
 	err := row.Scan(&account.AccountID, &account.CurrencyCode, &account.StatusCode, &account.Balance, &account.ClientID)
-	if err == sql.ErrNoRows {
+	if errors.Is(err, sql.ErrNoRows) {
 		return entity.Account{}, fmt.Errorf("account details not exist")
 	}
 	return account, nil
@@ -38,11 +40,11 @@ func (db *Database) UpdateAccountDetails(accountID int64, account entity.Account
 	res, err := db.Exec(updateAccountDetailsStatement, accountID, account.CurrencyCode, account.StatusCode, account.Balance, account.ClientID)
 
 	if err != nil {
-		return fmt.Errorf("unable to execute the query. %v", err)
+		return fmt.Errorf("unable to execute the query. %w", err)
 	}
 	_, err = res.RowsAffected()
 	if err != nil {
-		return fmt.Errorf("error while checking the affected rows. %v", err)
+		return fmt.Errorf("error while checking the affected rows. %w", err)
 	}
 
 	return nil

@@ -20,7 +20,7 @@ var jwtKey = []byte("secret")
 // Claims jwt claims struct
 type Claims struct {
 	entity.User
-	jwt.StandardClaims
+	jwt.RegisteredClaims
 }
 
 // UserController having user function
@@ -101,9 +101,9 @@ func (uc *userController) Login(ctx *gin.Context) error {
 		User: entity.User{
 			Name: name, Email: email, CreatedAt: createdAt, UpdatedAt: updatedAt,
 		},
-		StandardClaims: jwt.StandardClaims{
+		RegisteredClaims: jwt.RegisteredClaims{
 			// expiry time, expressed as unix milliseconds
-			ExpiresAt: expirationTime.Unix(),
+			ExpiresAt: &jwt.NumericDate{Time: expirationTime},
 		},
 	}
 

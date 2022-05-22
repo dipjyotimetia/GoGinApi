@@ -2,6 +2,7 @@ package controller
 
 import (
 	"fmt"
+	"log"
 
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v4"
@@ -11,9 +12,8 @@ import (
 func AuthMiddleware(ctx *gin.Context, jwtKey []byte) (jwt.MapClaims, bool) {
 	// obtain session token from the requests cookies
 	ck, err := ctx.Request.Cookie("token")
-	fmt.Println(ck, "cookie")
 	if err != nil {
-		fmt.Print(err)
+		log.Fatalf(err.Error())
 		return nil, false
 	}
 

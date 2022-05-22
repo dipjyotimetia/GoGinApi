@@ -1,11 +1,12 @@
 package controller
 
 import (
+	"strconv"
+
 	"github.com/GoGinApi/v2/internal/entity"
 	"github.com/GoGinApi/v2/internal/service"
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
-	"strconv"
 )
 
 type AccountController interface {

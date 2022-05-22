@@ -13,16 +13,14 @@ import (
 )
 
 var (
-	userRepository = repository.DatabaseConnection()
-	userService    = service.NewUser(userRepository)
+	store          = repository.DatabaseConnection()
+	userService    = service.NewUser(store)
 	userController = controller.NewUser(userService)
 
-	expenseRepository = repository.DatabaseConnection()
-	expenseService    = service.NewExpense(expenseRepository)
+	expenseService    = service.NewExpense(store)
 	expenseController = controller.NewExpense(expenseService)
 
-	accountRepository = repository.DatabaseConnection()
-	accountService    = service.NewAccountService(accountRepository)
+	accountService    = service.NewAccountService(store)
 	accountController = controller.NewAccount(accountService)
 )
 
@@ -41,11 +39,11 @@ func main() {
 func setupRouter() *gin.Engine {
 	// defer userRepository.CloseDB()
 	setupLogOutput()
-	//_, err := utils.SetupNewRelic()
-	//if err != nil {
+	// _, err := utils.SetupNewRelic()
+	// if err != nil {
 	//	fmt.Printf("newrelic error")
 	//	os.Exit(1)
-	//}
+	// }
 
 	server := gin.New()
 	server.Use(gin.Recovery(), middleware.Logger())

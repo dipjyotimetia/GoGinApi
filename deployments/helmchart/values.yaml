@@ -10,9 +10,9 @@ pullPolicy: IfNotPresent
 tag: "latest"
 
 imagePullSecrets: []
-nameOverride: ""
-fullnameOverride: ""
-
+nameOverride: "gogin"
+fullnameOverride: "gogin"
+namespace: "nonprod"
 serviceAccount:
   # Specifies whether a service account should be created
   create: true

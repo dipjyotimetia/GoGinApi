@@ -4,9 +4,10 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	"log"
+
 	"github.com/GoGinApi/v2/internal/entity"
 	"github.com/GoGinApi/v2/pkg/utils"
-	"log"
 )
 
 const (
@@ -27,7 +28,7 @@ func (db Database) ResetPassword(resetPassword entity.ResetPassword) error {
 	return nil
 }
 
-// Create create new user in database
+// Create new user in database
 func (db Database) Create(user entity.Register) error {
 	entity.HashPassword(&user)
 	_, err := db.Query(createUserStatement, user.Name, user.Password, user.Email)
@@ -47,7 +48,7 @@ func (db Database) Login(name, email, password, createdAt, updatedAt string, use
 
 	err := row.Scan(&id, &name, &password, &email, &createdAt, &updatedAt)
 
-	if err == sql.ErrNoRows {
+	if errors.Is(err, sql.ErrNoRows) {
 		return fmt.Errorf("user does not exist")
 	}
 

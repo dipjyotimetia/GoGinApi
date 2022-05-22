@@ -57,7 +57,7 @@ func (db Database) GetAllExpense() []entity.Expense {
 		err = rows.Scan(&expense.ExpenseID, &expense.ExpenseType, &expense.ExpenseAmount, &expense.ExpenseDate, &expense.ClientID)
 
 		if err != nil {
-			log.Fatalf("Unable to scan the row. %v", err)
+			log.Panicf("Unable to scan the row. %v", err)
 		}
 		// append the user in the users slice
 		expenses = append(expenses, expense)
@@ -66,7 +66,7 @@ func (db Database) GetAllExpense() []entity.Expense {
 	return expenses
 }
 
-// get one expense from the DB by its expense id
+// GetExpense get one expense from the DB by its expense id
 func (db Database) GetExpense(id int64) (entity.Expense, error) {
 	var expense entity.Expense
 
@@ -97,7 +97,7 @@ func (db Database) UpdateExpense(id int64, expense entity.Expense) error {
 	return nil
 }
 
-// delete expense in the DB
+// DeleteExpense delete expense in the DB
 func (db Database) DeleteExpense(id int64) error {
 	res, err := db.Exec(deleteExpenseStatement, id)
 

@@ -1,10 +1,11 @@
 package service
 
 import (
+	"testing"
+
 	"github.com/GoGinApi/v2/internal/entity"
 	"github.com/GoGinApi/v2/internal/mocks"
 	"github.com/stretchr/testify/assert"
-	"testing"
 )
 
 func TestUserServices(t *testing.T) {
