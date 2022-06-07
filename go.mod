@@ -9,7 +9,7 @@ require (
 	github.com/golang/mock v1.6.0
 	github.com/lib/pq v1.10.6
 	github.com/newrelic/go-agent/v3 v3.16.1
-	github.com/stretchr/testify v1.7.1
+	github.com/stretchr/testify v1.7.2
 	github.com/twinj/uuid v1.0.0
 	golang.org/x/crypto v0.0.0-20211215153901-e495a2d5b3d3
 )
@@ -39,5 +39,5 @@ require (
 	google.golang.org/protobuf v1.28.0 // indirect
 	gopkg.in/stretchr/testify.v1 v1.2.2 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
-	gopkg.in/yaml.v3 v3.0.0-20210107192922-496545a6307b // indirect
+	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
