@@ -47,12 +47,6 @@ const (
 	http2MaxFrameLen = 16384 // 16KB frame
 	// http://http2.github.io/http2-spec/#SettingValues
 	http2InitHeaderTableSize = 4096
-	// baseContentType is the base content-type for gRPC.  This is a valid
-	// content-type on it's own, but can also include a content-subtype such as
-	// "proto" as a suffix after "+" or ";".  See
-	// https://github.com/grpc/grpc/blob/master/doc/PROTOCOL-HTTP2.md#requests
-	// for more details.
-
 )
 
 var (
@@ -171,26 +165,6 @@ func decodeGRPCStatusDetails(rawDetails string) (*status.Status, error) {
 		return nil, err
 	}
 	return status.FromProto(st), nil
-}
-
-// constructErrMsg constructs error message to be returned in HTTP fallback mode.
-// Format: HTTP status code and its corresponding message + content-type error message.
-func constructHTTPErrMsg(httpStatus *int, contentTypeErr string) string {
-	var errMsgs []string
-
-	if httpStatus == nil {
-		errMsgs = append(errMsgs, "malformed header: missing HTTP status")
-	} else {
-		errMsgs = append(errMsgs, fmt.Sprintf("%s: HTTP status code %d", http.StatusText(*(httpStatus)), *httpStatus))
-	}
-
-	if contentTypeErr == "" {
-		errMsgs = append(errMsgs, "transport: missing content-type field")
-	} else {
-		errMsgs = append(errMsgs, contentTypeErr)
-	}
-
-	return strings.Join(errMsgs, "; ")
 }
 
 type timeoutUnit uint8
@@ -342,8 +316,6 @@ type bufWriter struct {
 	batchSize int
 	conn      net.Conn
 	err       error
-
-	onFlush func()
 }
 
 func newBufWriter(conn net.Conn, batchSize int) *bufWriter {
@@ -379,9 +351,6 @@ func (w *bufWriter) Flush() error {
 	}
 	if w.offset == 0 {
 		return nil
-	}
-	if w.onFlush != nil {
-		w.onFlush()
 	}
 	_, w.err = w.conn.Write(w.buf[:w.offset])
 	w.offset = 0
