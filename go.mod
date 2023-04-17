@@ -7,7 +7,7 @@ require (
 	github.com/go-playground/validator/v10 v10.12.0
 	github.com/golang-jwt/jwt/v4 v4.5.0
 	github.com/golang/mock v1.6.0
-	github.com/lib/pq v1.10.7
+	github.com/lib/pq v1.10.8
 	github.com/newrelic/go-agent/v3 v3.21.0
 	github.com/stretchr/testify v1.8.2
 	github.com/twinj/uuid v1.0.0
