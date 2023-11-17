@@ -1,6 +1,3 @@
-# github.com/andybalholm/brotli v1.0.5
-## explicit; go 1.12
-github.com/andybalholm/brotli
 # github.com/bytedance/sonic v1.9.1
 ## explicit; go 1.15
 github.com/bytedance/sonic
@@ -84,11 +81,6 @@ github.com/golang/protobuf/ptypes/timestamp
 # github.com/json-iterator/go v1.1.12
 ## explicit; go 1.12
 github.com/json-iterator/go
-# github.com/klauspost/compress v1.16.3
-## explicit; go 1.18
-github.com/klauspost/compress/flate
-github.com/klauspost/compress/gzip
-github.com/klauspost/compress/zlib
 # github.com/klauspost/cpuid/v2 v2.2.4
 ## explicit; go 1.15
 github.com/klauspost/cpuid/v2
@@ -111,7 +103,7 @@ github.com/modern-go/concurrent
 github.com/modern-go/reflect2
 # github.com/myesui/uuid v1.0.0
 ## explicit
-# github.com/newrelic/go-agent/v3 v3.27.0
+# github.com/newrelic/go-agent/v3 v3.28.0
 ## explicit; go 1.19
 github.com/newrelic/go-agent/v3/internal
 github.com/newrelic/go-agent/v3/internal/cat
@@ -164,15 +156,6 @@ github.com/twitchyliquid64/golang-asm/unsafeheader
 # github.com/ugorji/go/codec v1.2.11
 ## explicit; go 1.11
 github.com/ugorji/go/codec
-# github.com/valyala/bytebufferpool v1.0.0
-## explicit
-github.com/valyala/bytebufferpool
-# github.com/valyala/fasthttp v1.49.0
-## explicit; go 1.20
-github.com/valyala/fasthttp
-github.com/valyala/fasthttp/fasthttpadaptor
-github.com/valyala/fasthttp/fasthttputil
-github.com/valyala/fasthttp/stackless
 # golang.org/x/arch v0.3.0
 ## explicit; go 1.17
 golang.org/x/arch/x86/x86asm
