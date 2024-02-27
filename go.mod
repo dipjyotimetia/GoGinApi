@@ -11,7 +11,7 @@ require (
 	github.com/newrelic/go-agent/v3 v3.30.0
 	github.com/stretchr/testify v1.8.4
 	github.com/twinj/uuid v1.0.0
-	golang.org/x/crypto v0.19.0
+	golang.org/x/crypto v0.20.0
 )
 
 require (
