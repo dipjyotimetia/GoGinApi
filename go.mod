@@ -9,7 +9,7 @@ require (
 	github.com/golang/mock v1.6.0
 	github.com/lib/pq v1.10.9
 	github.com/newrelic/go-agent/v3 v3.30.0
-	github.com/stretchr/testify v1.8.4
+	github.com/stretchr/testify v1.9.0
 	github.com/twinj/uuid v1.0.0
 	golang.org/x/crypto v0.21.0
 )
@@ -33,7 +33,7 @@ require (
 	github.com/myesui/uuid v1.0.0 // indirect
 	github.com/pelletier/go-toml/v2 v2.0.8 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
-	github.com/stretchr/objx v0.5.0 // indirect
+	github.com/stretchr/objx v0.5.2 // indirect
 	github.com/twitchyliquid64/golang-asm v0.15.1 // indirect
 	github.com/ugorji/go/codec v1.2.11 // indirect
 	golang.org/x/arch v0.3.0 // indirect
