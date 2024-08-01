@@ -5,6 +5,7 @@ import (
 	"github.com/GoGinApi/v2/internal/mocks"
 	"github.com/stretchr/testify/assert"
 	"testing"
+	"github.com/pact-foundation/pact-go/v2/dsl"
 )
 
 type TestCase struct {
@@ -25,6 +26,7 @@ func TestAccountServices(t *testing.T) {
 		{"Successful add account details", testAddAccountDetails},
 		{"Successful get account details", testGetAccountDetails},
 		{"Successful update account details", testUpdateAccountDetails},
+		{"Successful Pact test for account service", testPactAccountService},
 	} {
 		t.Run(c.name, c.test)
 	}
@@ -58,4 +60,40 @@ func testGetAccountDetails(t *testing.T) {
 	testService := NewAccountService(mockRepo)
 	result, _ := testService.GetAccountDetails(10)
 	assert.Equal(t, result, account)
+}
+
+func testPactAccountService(t *testing.T) {
+	pact := &dsl.Pact{
+		Consumer: "AccountServiceConsumer",
+		Provider: "AccountServiceProvider",
+	}
+
+	defer pact.Teardown()
+
+	pact.AddInteraction().
+		Given("Account with ID 1 exists").
+		UponReceiving("A request to get account details").
+		WithRequest(dsl.Request{
+			Method: "GET",
+			Path:   dsl.String("/accounts/1"),
+		}).
+		WillRespondWith(dsl.Response{
+			Status:  200,
+			Headers: dsl.MapMatcher{"Content-Type": dsl.String("application/json")},
+			Body: dsl.Match(&map[string]interface{}{
+				"accountID":    dsl.Like(1),
+				"currencyCode": dsl.Like("AUD"),
+				"statusCode":   dsl.Like("active"),
+				"balance":      dsl.Like(200.0),
+				"clientID":     dsl.Like(1),
+			}),
+		})
+
+	err := pact.Verify(func() error {
+		// Make request to the provider
+		// This is where you would call your actual service
+		return nil
+	})
+
+	assert.NoError(t, err)
 }
