@@ -3,6 +3,7 @@ package entity
 import (
 	"github.com/stretchr/testify/assert"
 	"testing"
+	"github.com/pact-foundation/pact-go/v2/dsl"
 )
 
 func TestHashPassword(t *testing.T) {
@@ -35,4 +36,39 @@ func TestHashPassword(t *testing.T) {
 			assert.Error(t, CheckPasswordHash("test@password", tt.Password))
 		})
 	}
+}
+
+func TestPact_UserEntity(t *testing.T) {
+	pact := &dsl.Pact{
+		Consumer: "UserEntityConsumer",
+		Provider: "UserEntityProvider",
+	}
+
+	defer pact.Teardown()
+
+	pact.AddInteraction().
+		Given("User with email test1@gmail.com exists").
+		UponReceiving("A request to check user existence").
+		WithRequest(dsl.Request{
+			Method: "POST",
+			Path:   dsl.String("/users/check"),
+			Body: dsl.Match(&map[string]interface{}{
+				"email": dsl.Like("test1@gmail.com"),
+			}),
+		}).
+		WillRespondWith(dsl.Response{
+			Status:  200,
+			Headers: dsl.MapMatcher{"Content-Type": dsl.String("application/json")},
+			Body: dsl.Match(&map[string]interface{}{
+				"exists": dsl.Like(true),
+			}),
+		})
+
+	err := pact.Verify(func() error {
+		// Make request to the provider
+		// This is where you would call your actual service
+		return nil
+	})
+
+	assert.NoError(t, err)
 }
