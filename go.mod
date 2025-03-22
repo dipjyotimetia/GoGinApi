@@ -9,7 +9,7 @@ require (
 	github.com/golang-jwt/jwt/v4 v4.5.2
 	github.com/golang/mock v1.6.0
 	github.com/lib/pq v1.10.9
-	github.com/newrelic/go-agent/v3 v3.37.0
+	github.com/newrelic/go-agent/v3 v3.38.0
 	github.com/stretchr/testify v1.10.0
 	github.com/twinj/uuid v1.0.0
 	golang.org/x/crypto v0.36.0
