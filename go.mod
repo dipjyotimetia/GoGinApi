@@ -1,6 +1,7 @@
 module github.com/GoGinApi/v2
 
-go 1.17
+go 1.23.0
+
 toolchain go1.24.1
 
 require (
@@ -10,7 +11,7 @@ require (
 	github.com/golang/mock v1.6.0
 	github.com/lib/pq v1.10.9
 	github.com/newrelic/go-agent/v3 v3.38.0
-	github.com/stretchr/testify v1.10.0
+	github.com/stretchr/testify v1.11.1
 	github.com/twinj/uuid v1.0.0
 	golang.org/x/crypto v0.36.0
 )
