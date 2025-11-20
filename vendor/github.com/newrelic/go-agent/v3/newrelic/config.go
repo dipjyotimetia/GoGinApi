@@ -67,6 +67,11 @@ type Config struct {
 	//
 	// https://docs.newrelic.com/docs/insights/new-relic-insights/adding-querying-data/inserting-custom-events-new-relic-apm-agents
 	CustomInsightsEvents struct {
+		// CustomAttributesEnabled Toggles whether we send our custom attributes with forwarded logs.
+		CustomAttributesEnabled bool
+		// CustomAttributes A hash with key/value pairs to add as custom attributes to all log events forwarded to New Relic.
+		// https://docs.newrelic.com/docs/TODO
+		CustomAttributesValues map[string]string
 		// Enabled controls whether RecordCustomEvent will collect
 		// custom analytics events.  High security mode overrides this
 		// setting.
@@ -108,6 +113,8 @@ type Config struct {
 		ExpectStatusCodes []int
 		// Attributes controls the attributes included with errors.
 		Attributes AttributeDestinationConfig
+		// Reservoir limit for error events. Defaults to 100
+		MaxSamplesStored int
 		// RecordPanics controls whether or not a deferred
 		// Transaction.End will attempt to recover panics, record them
 		// as errors, and then re-panic them.  By default, this is
@@ -274,6 +281,23 @@ type Config struct {
 		// ReservoirLimit sets the desired maximum span event reservoir limit
 		// for collecting span event data. The collector MAY override this value.
 		ReservoirLimit int
+		// Sampler controls the sampling behavior for Inbound Requests for distributed traces
+		// If a valid traceparent exists, the following configuration options will allow
+		// users to choose which sampling strategy to apply.
+		//
+		//	`RemoteParentSampled` (when the traceparent sampled = 1)
+		//	* `always_on`: the agent will sample spans
+		//	* `always_off`: the agent will NOT sample spans
+		//	* `default`: the agent will use the existing NR sampling (default)
+
+		//	`RemoteParentNotSampled` (when the traceparent sampled = 0)
+		//	* `always_on`: the agent will sample spans
+		//	* `always_off`: the agent will NOT sample spans
+		//	* `default`: the agent will use the existing NR sampling (default)
+		Sampler struct {
+			RemoteParentSampled    string
+			RemoteParentNotSampled string
+		}
 	}
 
 	// SpanEvents controls behavior relating to Span Events.  Span Events
@@ -282,6 +306,9 @@ type Config struct {
 		Enabled bool
 		// Attributes controls the attributes included on Spans.
 		Attributes AttributeDestinationConfig
+		// MaxSamplesStored allows you to limit the number of Span
+		// Events stored/reported in a given 60-second period
+		MaxSamplesStored int
 	}
 
 	// InfiniteTracing controls behavior related to Infinite Tracing tail based
@@ -631,11 +658,14 @@ func defaultConfig() Config {
 
 	c.Enabled = true
 	c.Labels = make(map[string]string)
+	c.CustomInsightsEvents.CustomAttributesEnabled = false
+	c.CustomInsightsEvents.CustomAttributesValues = make(map[string]string)
 	c.CustomInsightsEvents.Enabled = true
 	c.CustomInsightsEvents.MaxSamplesStored = internal.MaxCustomEvents
 	c.TransactionEvents.Enabled = true
 	c.TransactionEvents.Attributes.Enabled = true
 	c.TransactionEvents.MaxSamplesStored = internal.MaxTxnEvents
+
 	c.HighSecurity = false
 	c.ErrorCollector.Enabled = true
 	c.ErrorCollector.CaptureEvents = true
@@ -646,6 +676,7 @@ func defaultConfig() Config {
 		http.StatusNotFound, // 404
 	}
 	c.ErrorCollector.Attributes.Enabled = true
+	c.ErrorCollector.MaxSamplesStored = internal.MaxErrorEvents
 	c.Utilization.DetectAWS = true
 	c.Utilization.DetectAzure = true
 	c.Utilization.DetectPCF = true
@@ -679,8 +710,11 @@ func defaultConfig() Config {
 	c.CrossApplicationTracer.Enabled = false
 	c.DistributedTracer.Enabled = true
 	c.DistributedTracer.ReservoirLimit = internal.MaxSpanEvents
+	c.DistributedTracer.Sampler.RemoteParentSampled = Default.String()
+	c.DistributedTracer.Sampler.RemoteParentNotSampled = Default.String()
 	c.SpanEvents.Enabled = true
 	c.SpanEvents.Attributes.Enabled = true
+	c.SpanEvents.MaxSamplesStored = internal.MaxSpanEvents
 
 	c.DatastoreTracer.InstanceReporting.Enabled = true
 	c.DatastoreTracer.DatabaseNameReporting.Enabled = true
@@ -776,30 +810,45 @@ func (c Config) validateTraceObserverConfig() (*observerURL, error) {
 	}, nil
 }
 
-// maxTxnEvents returns the configured maximum number of Transaction Events if it has been configured
-// and is less than the default maximum; otherwise it returns the default max.
-func (c Config) maxTxnEvents() int {
-	configured := c.TransactionEvents.MaxSamplesStored
+// maxTxnEvents returns the configured maximum number of Transaction Events if it
+// is less than the default maximum; otherwise it returns the default max.
+func maxTxnEvents(configured int) int {
 	if configured < 0 || configured > internal.MaxTxnEvents {
 		return internal.MaxTxnEvents
 	}
 	return configured
 }
 
-// maxCustomEvents returns the configured maximum number of Custom Events if it has been configured
-// and is less than the default maximum; otherwise it returns the default max.
-func (c Config) maxCustomEvents() int {
-	configured := c.CustomInsightsEvents.MaxSamplesStored
+// maxSpanEvents returns the configured maximum number of Span Events if it
+// is less than the default maximum; otherwise it returns the default max.
+func maxSpanEvents(configured int) int {
+	if configured < 0 || configured > internal.MaxSpanEvents {
+		return internal.MaxSpanEvents
+	}
+	return configured
+}
+
+// maxCustomEvents returns the configured maximum number of Custom Events if it
+// is less than the default maximum; otherwise it returns the default max.
+func maxCustomEvents(configured int) int {
 	if configured < 0 || configured > internal.MaxCustomEvents {
 		return internal.MaxCustomEvents
 	}
 	return configured
 }
 
-// maxLogEvents returns the configured maximum number of Log Events if it has been configured
-// and is less than the default maximum; otherwise it returns the default max.
-func (c Config) maxLogEvents() int {
-	configured := c.ApplicationLogging.Forwarding.MaxSamplesStored
+// maxErrorEvents returns the configured maximum number of Error Events if it
+// is less than the default maximum; otherwise it returns the default max.
+func maxErrorEvents(configured int) int {
+	if configured < 0 || configured > internal.MaxErrorEvents {
+		return internal.MaxErrorEvents
+	}
+	return configured
+}
+
+// maxLogEvents returns the configured maximum number of Log Events if it
+// is less than the default maximum; otherwise it returns the default max.
+func maxLogEvents(configured int) int {
 	if configured < 0 || configured > internal.MaxLogEvents {
 		return internal.MaxLogEvents
 	}
@@ -825,6 +874,12 @@ func copyConfigReferenceFields(cfg Config) Config {
 		cp.Labels = make(map[string]string, len(cfg.Labels))
 		for key, val := range cfg.Labels {
 			cp.Labels[key] = val
+		}
+	}
+	if cfg.CustomInsightsEvents.CustomAttributesValues != nil {
+		cp.CustomInsightsEvents.CustomAttributesValues = make(map[string]string, len(cfg.CustomInsightsEvents.CustomAttributesValues))
+		for key, val := range cfg.CustomInsightsEvents.CustomAttributesValues {
+			cp.CustomInsightsEvents.CustomAttributesValues[key] = val
 		}
 	}
 	if cfg.ErrorCollector.IgnoreStatusCodes != nil {
@@ -982,7 +1037,7 @@ func configConnectJSONInternal(c Config, pid int, util *utilization.Data, e envi
 		Util:             util,
 		SecurityPolicies: securityPolicies,
 		Metadata:         metadata,
-		EventData:        internal.DefaultEventHarvestConfigWithDT(c.TransactionEvents.MaxSamplesStored, c.ApplicationLogging.Forwarding.MaxSamplesStored, c.CustomInsightsEvents.MaxSamplesStored, c.DistributedTracer.ReservoirLimit, c.DistributedTracer.Enabled),
+		EventData:        internal.DefaultEventHarvestConfigWithDT(c.TransactionEvents.MaxSamplesStored, c.ApplicationLogging.Forwarding.MaxSamplesStored, c.CustomInsightsEvents.MaxSamplesStored, c.SpanEvents.MaxSamplesStored, c.DistributedTracer.Enabled),
 	}})
 }
 

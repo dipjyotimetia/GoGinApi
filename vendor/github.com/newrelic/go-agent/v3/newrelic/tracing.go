@@ -79,6 +79,7 @@ type txnData struct {
 	SlowQueriesEnabled bool
 	noticeErrors       bool // If errors are not expected or ignored, then true
 	expectedErrors     bool
+	ignoreApdex        bool
 
 	stamp           segmentStamp
 	threadIDCounter uint64
@@ -205,12 +206,17 @@ func (b boolJSONWriter) WriteJSON(buf *bytes.Buffer) {
 // value is a jsonWriter to allow for segment query parameters.
 type spanAttributeMap map[string]jsonWriter
 
+// addString writes the span attribute and checks for handling the special
+// case for db.statement
 func (m *spanAttributeMap) addString(key string, val string) {
 	if val != "" {
-		m.add(key, stringJSONWriter(val))
+		if key == SpanAttributeDBStatement {
+			m.add(key, stringJSONWriter(truncateSpanAttribute(val, attributeSpanDBStatementLimit)))
+		} else {
+			m.add(key, stringJSONWriter(stringLengthByteLimit(val, attributeValueLengthLimit)))
+		}
 	}
 }
-
 func (m *spanAttributeMap) addInt(key string, val int) {
 	m.add(key, intJSONWriter(val))
 }
@@ -851,6 +857,14 @@ func endDatastoreSegment(p endDatastoreParams) error {
 	}
 
 	return err
+}
+
+func truncateSpanAttribute(value string, maxLength int) string {
+	if len(value) > maxLength {
+		// truncate to last three bytes and append "..."
+		return stringLengthByteLimit(value, maxLength-3) + "..."
+	}
+	return value
 }
 
 // MergeBreakdownMetrics creates segment metrics.
