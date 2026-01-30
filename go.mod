@@ -1,6 +1,7 @@
 module github.com/GoGinApi/v2
 
-go 1.17
+go 1.23.0
+
 toolchain go1.24.1
 
 require (
@@ -8,7 +9,7 @@ require (
 	github.com/go-playground/validator/v10 v10.25.0
 	github.com/golang-jwt/jwt/v4 v4.5.2
 	github.com/golang/mock v1.6.0
-	github.com/lib/pq v1.10.9
+	github.com/lib/pq v1.11.1
 	github.com/newrelic/go-agent/v3 v3.38.0
 	github.com/stretchr/testify v1.10.0
 	github.com/twinj/uuid v1.0.0
